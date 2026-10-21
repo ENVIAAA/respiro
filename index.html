@@ -3,111 +3,136 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050807">
 <title>Respiro</title>
 <style>
-:root{--bg:#0a0a0a;--panel:#141414;--ink:#f4ecd6;--mute:#a99d7a;--line:#2b2618;--gold:#d4af37;--theirs:#201d14;--bad:#ff6b6b;color-scheme:dark}
+:root{--bg:#050807;--panel:#0b1510;--panel2:#10201a;--line:#1a3226;--ink:#eaf3ec;--mute:#85a091;--green:#22c58b;--green2:#12795a;--gold:#d4af37;--gold2:#f2da7c;--bad:#ff7a7a;--r:18px;color-scheme:dark}
 *{box-sizing:border-box}html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--ink);font:16px system-ui,-apple-system,"Segoe UI",sans-serif}
+body{background:radial-gradient(900px 500px at 85% -10%,rgba(34,197,139,.14),transparent 60%),var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
 button,input{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none}
-:focus-visible{outline:3px solid var(--gold);outline-offset:2px}[hidden]{display:none!important}
-#auth{min-height:100%;display:grid;grid-template-columns:1.1fr 1fr}
-.hero{background:var(--gold);color:#0a0a0a;padding:56px;display:flex;flex-direction:column;justify-content:flex-end;gap:14px}
-.hero h1{font-size:clamp(44px,7vw,92px);line-height:.95;margin:0;letter-spacing:-.03em}.hero p{margin:0;max-width:34ch;font-size:19px}
-.fw{display:grid;place-items:center;padding:32px}.card{width:100%;max-width:380px}
-.tabs{display:flex;background:var(--theirs);border-radius:999px;padding:4px;margin-bottom:22px}
-.tabs button{flex:1;padding:10px;border-radius:999px;color:var(--mute)}
-.tabs button[aria-selected=true]{background:var(--gold);color:#0a0a0a;font-weight:600}
-label{display:block;font-size:14px;color:var(--mute);margin:14px 0 6px}
-input[type=text],input[type=email],input[type=password],input[type=date]{width:100%;padding:13px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel)}
-.chk{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:14px;color:var(--mute)}.chk input{margin-top:3px;accent-color:var(--gold)}
-.go{width:100%;margin-top:20px;padding:14px;border-radius:12px;background:var(--gold);color:#0a0a0a;font-weight:700}.go:disabled{opacity:.6}
-.note{font-size:14px;min-height:20px;margin:10px 0 0;color:var(--bad)}.note.ok{color:var(--gold)}
-#forgot{width:100%;border:1.5px solid var(--gold);border-radius:12px;padding:13px;margin-top:12px}
-.lnk{display:block;margin:14px auto 0;color:var(--gold);text-decoration:underline;font-size:14px}
-.ver{text-align:center;color:var(--mute);font-size:12px;margin-top:22px}
-#app{height:100%;display:grid;grid-template-columns:330px 1fr}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}[hidden]{display:none!important}
+svg.i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+/* acceso */
+#auth{min-height:100%;display:grid;grid-template-columns:1.15fr 1fr}
+.hero{position:relative;padding:56px;display:flex;flex-direction:column;justify-content:flex-end;gap:18px;background:linear-gradient(155deg,#0f4a33 0%,#082a1d 45%,#050807 100%);overflow:hidden}
+.hero:before{content:"";position:absolute;width:520px;height:520px;right:-160px;top:-160px;border-radius:50%;border:1px solid rgba(212,175,55,.35)}
+.hero:after{content:"";position:absolute;width:320px;height:320px;right:-60px;top:-60px;border-radius:50%;border:1px solid rgba(212,175,55,.2)}
+.hero h1{margin:0;font-size:clamp(48px,8vw,104px);line-height:.92;letter-spacing:-.04em;font-weight:800;background:linear-gradient(135deg,var(--gold2),var(--gold) 60%,#a9831f);-webkit-background-clip:text;background-clip:text;color:transparent;position:relative}
+.hero p{margin:0;max-width:36ch;font-size:19px;color:#cfe3d6;position:relative}
+.chips{display:flex;gap:8px;flex-wrap:wrap;position:relative}.chips span{padding:6px 14px;border:1px solid rgba(212,175,55,.5);border-radius:999px;color:var(--gold2);font-size:13px}
+.fw{display:grid;place-items:center;padding:32px}
+.card{width:100%;max-width:400px;background:rgba(16,32,26,.72);border:1px solid var(--line);border-radius:26px;padding:28px;backdrop-filter:blur(10px)}
+.tabs{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px;margin-bottom:20px}
+.tabs button{flex:1;padding:10px;border-radius:999px;color:var(--mute);font-weight:600;transition:.2s}
+.tabs button[aria-selected=true]{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff}
+label{display:block;font-size:13px;color:var(--mute);margin:16px 0 6px;letter-spacing:.02em}
+input[type=text],input[type=password],input[type=date]{width:100%;padding:14px 16px;border-radius:14px;border:1.5px solid var(--line);background:var(--bg);transition:border-color .2s}
+input[type=text]:focus,input[type=password]:focus,input[type=date]:focus{border-color:var(--gold);outline:none}
+.chk{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:13px;color:var(--mute)}.chk input{margin-top:3px;accent-color:var(--green)}
+.go{width:100%;margin-top:22px;padding:15px;border-radius:14px;background:linear-gradient(135deg,var(--gold2),var(--gold) 55%,#b8902a);color:#0a0f0c;font-weight:800;letter-spacing:.01em}.go:disabled{opacity:.6}
+.note{font-size:14px;min-height:20px;margin:12px 0 0;color:var(--bad)}.note.ok{color:var(--green)}
+.ver{text-align:center;color:var(--mute);font-size:12px;margin:22px 0 0}
+/* app */
+#app{height:100%;display:grid;grid-template-columns:340px 1fr}
 aside{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
-.me{display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid var(--line)}.me b{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.av{width:42px;height:42px;border-radius:50%;background:#8a6a1c;color:#fff;display:grid;place-items:center;font-weight:600;flex:none}
-.av.emo{background:var(--theirs);font-size:24px}
-.ib{padding:8px 12px;border-radius:10px;color:var(--gold)}.ib:hover{background:var(--theirs)}
-.list{overflow:auto;flex:1}.ct{display:flex;gap:12px;align-items:center;padding:14px 16px;width:100%;text-align:left}
-.ct:hover,.ct[aria-current=true]{background:var(--theirs)}.hint{padding:20px 16px;color:var(--mute)}
+.me{display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid var(--line)}
+.me b{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:17px}
+.av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--green2),#0b3d2b);color:var(--gold2);display:grid;place-items:center;font-weight:700;flex:none;box-shadow:0 0 0 2px var(--gold)}
+.av.emo{background:var(--panel2);font-size:24px}
+.ib{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:var(--gold);transition:.2s}.ib:hover{background:var(--panel2);color:var(--gold2)}
+.ib.gm{width:auto;padding:0 14px;border-radius:999px;border:1px solid var(--gold);font-weight:700;font-size:13px}
+.list{overflow:auto;flex:1;padding:8px}
+.ct{display:flex;gap:12px;align-items:center;padding:12px;width:100%;text-align:left;border-radius:16px;border-left:3px solid transparent;transition:.15s}
+.ct b{font-weight:600}.ct:hover{background:var(--panel2)}.ct[aria-current=true]{background:var(--panel2);border-left-color:var(--gold)}
+.hint{padding:20px 16px;color:var(--mute)}
 main{display:flex;flex-direction:column;min-height:0;min-width:0}
-.top{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--panel);border-bottom:1px solid var(--line)}.top b{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.top{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+.top b{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:17px;margin-left:4px}
 .back{display:none}
-.msgs{flex:1;overflow:auto;padding:18px 16px;display:flex;flex-direction:column;gap:8px}
-.m{max-width:min(75%,520px);padding:10px 14px;border-radius:18px;background:var(--theirs);align-self:flex-start;overflow-wrap:anywhere}
-.m.me{background:var(--gold);color:#0a0a0a;align-self:flex-end}
-.m.game{align-self:center;text-align:center;background:var(--panel);color:var(--ink);border:1.5px solid var(--gold);max-width:min(88%,460px)}
-.m.game small{display:block;color:var(--gold);font-weight:600;margin-bottom:6px}
-.m img{display:block;max-width:100%;border-radius:12px;margin-bottom:4px}.m a{color:inherit;font-weight:600}
+.msgs{flex:1;overflow:auto;padding:20px 18px;display:flex;flex-direction:column;gap:8px;background:radial-gradient(700px 400px at 20% 110%,rgba(34,197,139,.08),transparent 60%)}
+.m{max-width:min(75%,520px);padding:10px 14px;border-radius:20px 20px 20px 6px;background:var(--panel2);border:1px solid var(--line);align-self:flex-start;overflow-wrap:anywhere}
+.m.me{background:linear-gradient(135deg,#1fb27c,#0f6e50);border-color:transparent;color:#fff;align-self:flex-end;border-radius:20px 20px 6px 20px}
+.m.game{align-self:center;text-align:center;background:rgba(212,175,55,.08);border:1.5px solid var(--gold);color:var(--ink);max-width:min(88%,460px);border-radius:20px}
+.m.game small{display:block;color:var(--gold2);font-weight:700;margin-bottom:6px;letter-spacing:.03em}
+.m img{display:block;max-width:100%;border-radius:12px;margin-bottom:4px}.m a{color:inherit;font-weight:700}
 .m time{display:block;font-size:11px;opacity:.65;margin-top:3px;text-align:right}.m.game time{text-align:center}
 .empty{margin:auto;color:var(--mute);text-align:center;max-width:30ch}
 .cp{display:flex;gap:8px;align-items:center;padding:12px 16px;background:var(--panel);border-top:1px solid var(--line)}
-.cp input[type=text]{flex:1;border-radius:999px;padding:12px 18px}
-.snd{background:var(--gold);color:#0a0a0a;border-radius:999px;padding:11px 18px;font-weight:700}
-#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--panel);border:1px solid var(--gold);padding:10px 16px;border-radius:12px;max-width:90%;z-index:20}
-.dlg{position:fixed;inset:0;background:rgba(0,0,0,.75);display:grid;place-items:center;z-index:9;padding:16px}
-.box{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;width:min(92vw,380px)}.box h3{margin:0 0 6px}.box p{color:var(--mute);font-size:14px;margin:0 0 14px}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.grid button{font-size:32px;padding:10px;border-radius:14px;background:var(--theirs)}.grid button[aria-pressed=true]{outline:2px solid var(--gold)}
-.row{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
-.gbtn{width:100%;padding:14px;border-radius:12px;background:var(--theirs);margin-bottom:10px;font-weight:600;text-align:left}.gbtn small{display:block;color:var(--mute);font-weight:400}
-#call,#inc{position:fixed;inset:0;z-index:10;background:#080808;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;text-align:center}
-#inc{background:rgba(8,8,8,.95)}#inc b{font-size:28px}#inc>div{display:flex;gap:12px;margin-top:20px}
-#inc .go,#inc .rej{width:auto;padding:14px 22px;margin:0}.rej{background:var(--bad);color:#0a0a0a;border-radius:12px;font-weight:700}
+.cp input[type=text]{flex:1;border-radius:999px;padding:13px 20px;background:var(--panel2)}
+.snd{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#0a0f0c}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--panel);border:1px solid var(--gold);padding:11px 18px;border-radius:14px;max-width:90%;z-index:20}
+.dlg{position:fixed;inset:0;background:rgba(0,0,0,.78);display:grid;place-items:center;z-index:9;padding:16px}
+.box{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--gold);border-radius:22px;padding:22px;width:min(92vw,390px)}
+.box h3{margin:0 0 6px;color:var(--gold2)}.box p{color:var(--mute);font-size:14px;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.grid button{font-size:32px;padding:10px;border-radius:16px;background:var(--panel2)}.grid button[aria-pressed=true]{outline:2px solid var(--gold)}
+.row{display:flex;justify-content:space-between;gap:10px;margin-top:14px}.row button{padding:8px 14px;border-radius:999px;color:var(--gold)}
+.gbtn{width:100%;padding:14px 16px;border-radius:16px;background:var(--panel2);border:1px solid var(--line);margin-bottom:10px;font-weight:700;text-align:left}.gbtn:hover{border-color:var(--gold)}.gbtn small{display:block;color:var(--mute);font-weight:400}
+#call,#inc{position:fixed;inset:0;z-index:10;background:radial-gradient(600px 400px at 50% 30%,#0f4a33,#050807);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;text-align:center}
+#inc b{font-size:28px}#inc>div{display:flex;gap:12px;margin-top:20px}
+#inc .go,#inc .rej{width:auto;padding:14px 24px;margin:0;border-radius:999px}.rej{background:var(--bad);color:#150505;font-weight:800}
 #remote{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-#selfv{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:14px;width:96px;height:128px;object-fit:cover;border-radius:12px;border:1px solid var(--gold);z-index:2;transform:scaleX(-1)}
+#selfv{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:14px;width:96px;height:128px;object-fit:cover;border-radius:14px;border:1.5px solid var(--gold);z-index:2;transform:scaleX(-1)}
 #call>*:not(video){position:relative;z-index:1;text-shadow:0 1px 6px #000}#call h2{font-size:28px;margin:0}
-.ctl{display:flex;gap:12px;margin-top:20px}.ctl button{padding:14px 20px;border-radius:999px;background:var(--theirs);font-weight:600;text-shadow:none}
-.ctl .end{background:var(--bad);color:#0a0a0a}.ctl button[aria-pressed=true]{background:var(--gold);color:#0a0a0a}
-@media (max-width:760px){#auth{grid-template-columns:1fr}.hero{padding:32px 24px;min-height:30vh}
-#app{grid-template-columns:1fr}#app.open aside{display:none}#app:not(.open) main{display:none}.back{display:block}.m{max-width:86%}}
+.ctl{display:flex;gap:12px;margin-top:20px}.ctl button{padding:14px 22px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);font-weight:700;text-shadow:none}
+.ctl .end{background:var(--bad);color:#150505;border:0}.ctl button[aria-pressed=true]{background:var(--gold);color:#0a0f0c}
+@media (max-width:760px){#auth{grid-template-columns:1fr}.hero{padding:32px 24px;min-height:34vh}
+#app{grid-template-columns:1fr}#app.open aside{display:none}#app:not(.open) main{display:none}.back{display:grid}.m{max-width:86%}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></symbol>
+<symbol id="i-video" viewBox="0 0 24 24"><rect x="2" y="6" width="13" height="12" rx="2"/><path d="m22 8-7 4 7 4z"/></symbol>
+<symbol id="i-clip" viewBox="0 0 24 24"><path d="m21 11-9 9a5.5 5.5 0 0 1-8-8l9-9a3.7 3.7 0 0 1 5.2 5.2l-9 9a1.8 1.8 0 0 1-2.6-2.6l8-8"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="m22 2-11 11M22 2l-7 20-4-9-9-4z"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
+</defs></svg>
+
 <section id="auth">
- <div class="hero"><h1>Respiro</h1><p>Escribe, comparte fotos y documentos, y habla con quien quieras. Solo para mayores de 18.</p></div>
+ <div class="hero"><h1>Respiro</h1><p>Escribe, comparte fotos y documentos, y habla con quien quieras. Solo para mayores de 18.</p>
+  <div class="chips"><span>Mensajes</span><span>Fotos y archivos</span><span>Llamadas</span><span>Videollamadas</span></div></div>
  <div class="fw"><div class="card">
-  <div class="tabs" id="tabs"><button id="tReg" aria-selected="true">Crear cuenta</button><button id="tLog" aria-selected="false">Entrar</button></div>
-  <div id="fName"><label for="name">Nombre</label><input id="name" type="text" autocomplete="name"></div>
-  <div id="fEmail"><label for="email">Correo</label><input id="email" type="email" autocomplete="email"></div>
-  <div id="fPass"><label for="pass" id="lblPass">Contraseña</label><input id="pass" type="password" autocomplete="new-password"></div>
+  <div class="tabs"><button id="tReg" aria-selected="true">Crear cuenta</button><button id="tLog" aria-selected="false">Entrar</button></div>
+  <label for="user">Usuario</label><input id="user" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="tu_usuario">
+  <label for="pass">Contraseña</label><input id="pass" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres">
   <div id="fDob"><label for="dob">Fecha de nacimiento</label><input id="dob" type="date" autocomplete="bday">
    <label class="chk"><input type="checkbox" id="ageok"><span>Confirmo que esta fecha es correcta y que tengo 18 años o más. No se podrá cambiar después.</span></label></div>
   <p class="note" id="note" role="alert"></p>
   <button class="go" id="go">Crear cuenta</button>
-  <button id="forgot" type="button" hidden>Olvidé mi contraseña</button>
-  <button class="lnk" id="backLog" type="button" hidden>Volver a entrar</button>
-  <p class="ver" id="ver">Versión 4.1</p>
+  <p class="ver" id="ver">Versión 5</p>
  </div></div>
 </section>
 
 <section id="app" hidden>
  <aside>
-  <div class="me"><button class="av" id="meAv" aria-label="Cambiar avatar"></button><b id="meName"></b><button class="ib" id="out">Salir</button></div>
+  <div class="me"><button class="av" id="meAv" aria-label="Cambiar avatar"></button><b id="meName"></b>
+   <button class="ib" id="out" aria-label="Salir"><svg class="i"><use href="#i-out"/></svg></button></div>
   <div class="list" id="list"></div>
  </aside>
  <main>
-  <div class="top"><button class="ib back" id="back" aria-label="Volver">‹</button><div class="av" id="hAv"></div><b id="hName">Elige un contacto</b>
-   <button class="ib" id="bGames" hidden>Juegos 21+</button><button class="ib" id="bCall">Llamar</button><button class="ib" id="bVid">Video</button></div>
+  <div class="top"><button class="ib back" id="back" aria-label="Volver"><svg class="i"><use href="#i-back"/></svg></button><div class="av" id="hAv"></div><b id="hName">Elige un contacto</b>
+   <button class="ib gm" id="bGames" aria-label="Juegos 21+" hidden>21+</button>
+   <button class="ib" id="bCall" aria-label="Llamar"><svg class="i"><use href="#i-phone"/></svg></button>
+   <button class="ib" id="bVid" aria-label="Videollamada"><svg class="i"><use href="#i-video"/></svg></button></div>
   <div class="msgs" id="msgs"><p class="empty">Elige un contacto de la lista para empezar a chatear.</p></div>
   <div class="cp">
-   <button class="ib" id="bAtt" aria-label="Adjuntar foto o documento">Adjuntar</button><input type="file" id="file" hidden>
+   <button class="ib" id="bAtt" aria-label="Adjuntar foto o documento"><svg class="i"><use href="#i-clip"/></svg></button><input type="file" id="file" hidden>
    <input type="text" id="txt" placeholder="Escribe un mensaje" aria-label="Mensaje" autocomplete="off">
-   <button class="snd" id="bSend">Enviar</button>
+   <button class="snd" id="bSend" aria-label="Enviar"><svg class="i"><use href="#i-send"/></svg></button>
   </div>
  </main>
 </section>
 
 <div class="dlg" id="pick" hidden role="dialog" aria-labelledby="pickT"><div class="box"><h3 id="pickT">Elige tu avatar</h3><p>Así te verán tus contactos.</p>
- <div class="grid" id="grid"></div><div class="row"><button class="ib" id="noAv">Usar iniciales</button><button class="ib" id="closePick">Cerrar</button></div></div></div>
+ <div class="grid" id="grid"></div><div class="row"><button id="noAv">Usar iniciales</button><button id="closePick">Cerrar</button></div></div></div>
 
 <div class="dlg" id="games" hidden role="dialog" aria-labelledby="gT"><div class="box"><h3 id="gT">Juegos 21+</h3>
  <p>Preguntas para personas adultas. Solo funcionan si todos en el chat tienen 21 años o más. Cualquiera puede pasar una pregunta.</p>
  <button class="gbtn" id="gFunny">Chistosas<small>Anécdotas y humor sobre citas</small></button>
  <button class="gbtn" id="gHot">Calientes<small>Coqueteo y preguntas picantes, sin contenido explícito</small></button>
- <div class="row"><span></span><button class="ib" id="closeG">Cerrar</button></div></div></div>
+ <div class="row"><span></span><button id="closeG">Cerrar</button></div></div></div>
 
 <div id="inc" hidden role="alertdialog" aria-labelledby="incName"><b id="incName"></b><span id="incKind"></span>
  <div><button class="go" id="accept">Contestar</button><button class="rej" id="reject">Rechazar</button></div></div>
@@ -120,10 +145,10 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
 <script>
 const SUPABASE_URL='https://bfxuchgcqfjbkfqtprbd.supabase.co';
 const SUPABASE_KEY='sb_publishable_fIJ4exocTdnTphv_KBlCLg_n1VRdD-a';
-const MIN_AGE=18,GAMES_AGE=21;
+const MIN_AGE=18,GAMES_AGE=21,DOMAIN='respiro.app';
 
 const $=id=>document.getElementById(id);
-const ini=s=>(s||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+const ini=s=>(s||'?').trim().slice(0,2).toUpperCase();
 const hm=t=>new Date(t).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
 const ANIMALS={fox:'🦊',panda:'🐼',koala:'🐨',lion:'🦁',tiger:'🐯',frog:'🐸',monkey:'🐵',penguin:'🐧',owl:'🦉',octopus:'🐙',unicorn:'🦄',dog:'🐶',cat:'🐱',rabbit:'🐰',bear:'🐻',butterfly:'🦋'};
 const Q={
@@ -132,80 +157,65 @@ const Q={
 const usedQ={};
 const ready=!/^PEGA/.test(SUPABASE_URL)&&!/^PEGA/.test(SUPABASE_KEY);
 let sb=ready?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
-let recovering=/type=recovery/.test(location.hash),me=null,conv=null,peer=null,chan=null,mode='reg',tt,myAvatar=null,myAge=null;
+let me=null,conv=null,peer=null,chan=null,mode='reg',tt,myAvatar=null,myAge=null;
 const items=new Map();
-const myName=()=>(me.user_metadata&&me.user_metadata.display_name)||me.email;
+const myName=()=>(me.user_metadata&&(me.user_metadata.display_name||me.user_metadata.username))||'usuario';
 function ageOf(s){const b=new Date(s),n=new Date();if(!s||isNaN(b))return null;let a=n.getFullYear()-b.getFullYear();const m=n.getMonth()-b.getMonth();if(m<0||(m===0&&n.getDate()<b.getDate()))a--;return a}
 function paint(el,key,name){const e=ANIMALS[key];el.textContent=e||ini(name);el.classList.toggle('emo',!!e)}
 function toast(t){const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout(tt);tt=setTimeout(()=>e.hidden=true,4500)}
 function note(t,ok){$('note').textContent=t;$('note').className='note'+(ok?' ok':'')}
 
-/* ---------- acceso ---------- */
+/* ---------- acceso: solo usuario y contraseña ---------- */
 function setMode(m){mode=m;
- $('tReg').setAttribute('aria-selected',m==='reg');$('tLog').setAttribute('aria-selected',m==='log'||m==='forgot');
- $('tabs').hidden=m==='reset';$('fName').hidden=m!=='reg';$('fDob').hidden=m!=='reg';
- $('fEmail').hidden=m==='reset';$('fPass').hidden=m==='forgot';
- $('lblPass').textContent=m==='reset'?'Nueva contraseña':'Contraseña';
- $('pass').autocomplete=(m==='reg'||m==='reset')?'new-password':'current-password';
- $('forgot').hidden=m==='forgot'||m==='reset';$('backLog').hidden=m!=='forgot';
- $('go').textContent={reg:'Crear cuenta',log:'Entrar',forgot:'Enviar enlace',reset:'Guardar contraseña'}[m];note('')}
+ $('tReg').setAttribute('aria-selected',m==='reg');$('tLog').setAttribute('aria-selected',m==='log');
+ $('fDob').hidden=m!=='reg';$('pass').autocomplete=m==='reg'?'new-password':'current-password';
+ $('go').textContent=m==='reg'?'Crear cuenta':'Entrar';note('')}
 $('tReg').onclick=()=>setMode('reg');$('tLog').onclick=()=>setMode('log');
-$('forgot').onclick=()=>setMode('forgot');$('backLog').onclick=()=>setMode('log');
 $('dob').max=new Date().toISOString().slice(0,10);
-if(!ready)note('Falta pegar la URL y la clave pública de tu proyecto de Supabase en el archivo.');
-else $('ver').textContent='Versión 4.1 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
+if(ready)$('ver').textContent='Versión 5 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
 async function diagnose(){
  const host=new URL(SUPABASE_URL).host;let r;
  try{const res=await fetch(SUPABASE_URL+'/auth/v1/health',{headers:{apikey:SUPABASE_KEY}});r='el servidor respondió '+res.status}
  catch(e){r='el navegador no pudo conectar ('+e.message+')'}
- return 'No se pudo completar la solicitud. Servidor: '+host+'. Prueba de conexión: '+r+'. Página: '+location.origin+'. Si no pudo conectar, revisa VPN, bloqueadores de anuncios, la red o abre la página desde la dirección de Netlify.'}
+ return 'No se pudo completar la solicitud. Servidor: '+host+'. Prueba de conexión: '+r+'. Si no pudo conectar, revisa VPN, bloqueadores de anuncios o la red.'}
 
 $('go').onclick=async()=>{
- if(!ready)return note('Falta pegar la URL y la clave pública de tu proyecto de Supabase en el archivo.');
- if(mode==='forgot'){
-  const em=$('email').value.trim().toLowerCase();
-  if(!/^\S+@\S+\.\S+$/.test(em))return note('Escribe un correo válido.');
-  $('go').disabled=true;
-  const {error}=await sb.auth.resetPasswordForEmail(em,{redirectTo:location.origin+location.pathname});
-  $('go').disabled=false;
-  return error?note(error.message):note('Si ese correo tiene cuenta, te enviamos un enlace para cambiar la contraseña. Revisa también el spam.',true)}
- if(mode==='reset'){
-  const np=$('pass').value;
-  if(np.length<6)return note('La contraseña necesita al menos 6 caracteres.');
-  $('go').disabled=true;const {error}=await sb.auth.updateUser({password:np});$('go').disabled=false;
-  if(error)return note(error.message);
-  recovering=false;history.replaceState(null,'',location.pathname);
-  const {data:u}=await sb.auth.getUser();me=u.user;$('pass').value='';enter();return}
- const name=$('name').value.trim(),email=$('email').value.trim().toLowerCase(),password=$('pass').value;
- if(!/^\S+@\S+\.\S+$/.test(email))return note('Escribe un correo válido.');
- if(password.length<6)return note('La contraseña necesita al menos 6 caracteres.');
+ if(!ready)return note('Falta configurar el servidor en el archivo.');
+ const u=$('user').value.trim().toLowerCase(),password=$('pass').value;
+ if(!/^[a-z0-9_]{3,20}$/.test(u))return note('El usuario debe tener de 3 a 20 caracteres: letras, números o guion bajo.');
+ if(password.length<8)return note('La contraseña necesita al menos 8 caracteres.');
  let dob=null;
  if(mode==='reg'){
-  if(!name)return note('Escribe tu nombre.');
   dob=$('dob').value;const a=ageOf(dob);
   if(a===null)return note('Escribe tu fecha de nacimiento.');
   if(a>110)return note('Revisa tu fecha de nacimiento.');
   if(a<MIN_AGE)return note('Respiro es solo para mayores de '+MIN_AGE+' años.');
   if(!$('ageok').checked)return note('Confirma que tu fecha de nacimiento es correcta.');
  }
+ const email=u+'@'+DOMAIN;
  $('go').disabled=true;note('');
  try{
   if(mode==='reg'){
-   const {data,error}=await sb.auth.signUp({email,password,options:{data:{display_name:name,birth_date:dob}}});
+   const {data,error}=await sb.auth.signUp({email,password,options:{data:{username:u,display_name:u,birth_date:dob}}});
    if(error)throw error;
-   if(!data.session)note('Cuenta creada. Revisa tu correo y confirma tu cuenta para entrar.',true);
+   if(!data.session)note('La cuenta se creó, pero el servidor todavía pide confirmar un correo. Hay que desactivar "Confirm email" en Supabase (Authentication → Sign In / Providers → Email).');
   }else{
    const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error}
  }catch(e){
-  if(/fetch|network|load failed/i.test(e.message||''))note(await diagnose());
-  else note(e.message==='Invalid login credentials'?'Correo o contraseña incorrectos.':e.message)}
+  const m=e.message||'';
+  if(/fetch|network|load failed/i.test(m))note(await diagnose());
+  else if(/already (been )?registered/i.test(m))note('Ese usuario ya existe. Elige otro.');
+  else if(m==='Invalid login credentials')note('Usuario o contraseña incorrectos.');
+  else if(/email not confirmed/i.test(m))note('Falta desactivar "Confirm email" en Supabase (Authentication → Sign In / Providers → Email).');
+  else if(/database error/i.test(m))note('No se pudo crear la cuenta. Revisa el usuario y tu fecha de nacimiento (mayores de 18).');
+  else if(/invalid/i.test(m)&&/email/i.test(m))note('El servidor rechazó el formato interno de la cuenta. Avísame para ajustarlo.');
+  else note(m)}
  $('go').disabled=false};
+$('pass').onkeydown=e=>{if(e.key==='Enter')$('go').click()};
 
 if(ready)sb.auth.onAuthStateChange((ev,s)=>{
- if(ev==='PASSWORD_RECOVERY'){recovering=true;setMode('reset');$('app').hidden=true;$('auth').hidden=false;return}
- if(s&&s.user){if(recovering){setMode('reset');return}if(!me||me.id!==s.user.id){me=s.user;enter()}}
+ if(s&&s.user){if(!me||me.id!==s.user.id){me=s.user;enter()}}
  else if(me){if(pc)endCall(true);me=null;conv=null;if(chan)sb.removeChannel(chan);if(inbox){sb.removeChannel(inbox);inbox=null}$('app').hidden=true;$('auth').hidden=false}});
-if(recovering)setMode('reset');
 $('out').onclick=()=>sb.auth.signOut();
 
 /* ---------- perfil, contactos ---------- */
