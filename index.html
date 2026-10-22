@@ -32,6 +32,8 @@ input[type=text]:focus,input[type=password]:focus,input[type=date]:focus{border-
 .go{width:100%;margin-top:22px;padding:15px;border-radius:14px;background:linear-gradient(135deg,var(--gold2),var(--gold) 55%,#b8902a);color:#0a0f0c;font-weight:800;letter-spacing:.01em}.go:disabled{opacity:.6}
 .note{font-size:14px;min-height:20px;margin:12px 0 0;color:var(--bad)}.note.ok{color:var(--green)}
 .ver{text-align:center;color:var(--mute);font-size:12px;margin:22px 0 0}
+.lnk{display:block;margin:16px auto 0;color:var(--gold2);text-decoration:underline;font-size:14px}
+.code{font:700 22px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.08em;text-align:center;padding:16px;border:1px dashed var(--gold);border-radius:14px;color:var(--gold2);background:var(--bg);user-select:all;word-break:break-all;margin-bottom:6px}
 /* app */
 #app{height:100%;display:grid;grid-template-columns:340px 1fr}
 aside{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
@@ -96,12 +98,15 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
  <div class="fw"><div class="card">
   <div class="tabs"><button id="tReg" aria-selected="true">Crear cuenta</button><button id="tLog" aria-selected="false">Entrar</button></div>
   <label for="user">Usuario</label><input id="user" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="tu_usuario">
-  <label for="pass">Contraseña</label><input id="pass" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres">
+  <div id="fCode" hidden><label for="rcode">Código de recuperación</label><input id="rcode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX-XXXX-XXXX"></div>
+  <label for="pass" id="lblPass">Contraseña</label><input id="pass" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres">
   <div id="fDob"><label for="dob">Fecha de nacimiento</label><input id="dob" type="date" autocomplete="bday">
    <label class="chk"><input type="checkbox" id="ageok"><span>Confirmo que esta fecha es correcta y que tengo 18 años o más. No se podrá cambiar después.</span></label></div>
   <p class="note" id="note" role="alert"></p>
   <button class="go" id="go">Crear cuenta</button>
-  <p class="ver" id="ver">Versión 5.1</p>
+  <button class="lnk" id="forgot" type="button" hidden>Olvidé mi contraseña</button>
+  <button class="lnk" id="backLog" type="button" hidden>Volver a entrar</button>
+  <p class="ver" id="ver">Versión 6</p>
  </div></div>
 </section>
 
@@ -139,6 +144,12 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
 <div id="call" hidden><video id="remote" autoplay playsinline hidden></video><video id="selfv" autoplay muted playsinline hidden></video>
  <h2 id="cName"></h2><div id="cState"></div>
  <div class="ctl"><button id="mute" aria-pressed="false">Silenciar</button><button id="cam" aria-pressed="false">Cámara</button><button class="end" id="hang">Colgar</button></div></div>
+<div class="dlg" id="codeDlg" hidden role="dialog" aria-labelledby="cdT"><div class="box"><h3 id="cdT">Tu código de recuperación</h3>
+ <p>Es la única forma de recuperar tu cuenta si olvidas la contraseña. No se vuelve a mostrar. Guárdalo en un lugar seguro.</p>
+ <div class="code" id="codeBox"></div>
+ <div class="row"><button id="codeCopy">Copiar</button><button id="codeDl">Descargar</button></div>
+ <label class="chk"><input type="checkbox" id="codeOk"><span>Ya guardé mi código.</span></label>
+ <button class="go" id="codeGo" disabled>Continuar</button></div></div>
 <div id="toast" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -167,12 +178,16 @@ function note(t,ok){$('note').textContent=t;$('note').className='note'+(ok?' ok'
 
 /* ---------- acceso: solo usuario y contraseña ---------- */
 function setMode(m){mode=m;
- $('tReg').setAttribute('aria-selected',m==='reg');$('tLog').setAttribute('aria-selected',m==='log');
- $('fDob').hidden=m!=='reg';$('pass').autocomplete=m==='reg'?'new-password':'current-password';
- $('go').textContent=m==='reg'?'Crear cuenta':'Entrar';note('')}
+ $('tReg').setAttribute('aria-selected',m==='reg');$('tLog').setAttribute('aria-selected',m==='log'||m==='forgot');
+ $('fDob').hidden=m!=='reg';$('fCode').hidden=m!=='forgot';
+ $('lblPass').textContent=m==='forgot'?'Nueva contraseña':'Contraseña';
+ $('pass').autocomplete=(m==='reg'||m==='forgot')?'new-password':'current-password';
+ $('forgot').hidden=m!=='log';$('backLog').hidden=m!=='forgot';
+ $('go').textContent={reg:'Crear cuenta',log:'Entrar',forgot:'Cambiar contraseña'}[m];note('')}
 $('tReg').onclick=()=>setMode('reg');$('tLog').onclick=()=>setMode('log');
+$('forgot').onclick=()=>setMode('forgot');$('backLog').onclick=()=>setMode('log');
 $('dob').max=new Date().toISOString().slice(0,10);
-if(ready)$('ver').textContent='Versión 5.1 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
+if(ready)$('ver').textContent='Versión 6 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
 async function diagnose(){
  const host=new URL(SUPABASE_URL).host;let r;
  try{const res=await fetch(SUPABASE_URL+'/auth/v1/health',{headers:{apikey:SUPABASE_KEY}});r='el servidor respondió '+res.status}
@@ -181,6 +196,25 @@ async function diagnose(){
 
 $('go').onclick=async()=>{
  if(!ready)return note('Falta configurar el servidor en el archivo.');
+ if(mode==='forgot'){
+  const u=$('user').value.trim().toLowerCase(),code=$('rcode').value,np=$('pass').value;
+  if(!/^[a-z0-9_]{3,20}$/.test(u))return note('Escribe tu usuario.');
+  if(code.replace(/[^A-Za-z0-9]/g,'').length<16)return note('Escribe tu código de recuperación completo (16 caracteres).');
+  if(np.length<8)return note('La nueva contraseña necesita al menos 8 caracteres.');
+  $('go').disabled=true;note('');
+  try{
+   const {data,error}=await sb.rpc('reset_password_with_code',{uname:u,code,new_password:np});
+   if(error)throw error;
+   if(data==='bad')note('Usuario o código de recuperación incorrecto.');
+   else if(data==='locked')note('Demasiados intentos. Espera 15 minutos e inténtalo de nuevo.');
+   else if(data==='short')note('La nueva contraseña necesita al menos 8 caracteres.');
+   else if(data==='ok'){
+    const r=await sb.auth.signInWithPassword({email:u+'@'+DOMAIN,password:np});
+    if(r.error)throw r.error;
+    await newRecoveryCode()}
+   else note('No se pudo cambiar la contraseña.');
+  }catch(e){note(/fetch|network|load failed/i.test(e.message||'')?await diagnose():(e.message||'Error'))}
+  $('go').disabled=false;return}
  const u=$('user').value.trim().toLowerCase(),password=$('pass').value;
  if(!/^[a-z0-9_]{3,20}$/.test(u))return note('El usuario debe tener de 3 a 20 caracteres: letras, números o guion bajo.');
  if(password.length<8)return note('La contraseña necesita al menos 8 caracteres.');
@@ -200,6 +234,7 @@ $('go').onclick=async()=>{
    if(error)throw error;
    if(!data.session){const r=await sb.auth.signInWithPassword({email,password});
     if(r.error){if(/not confirmed/i.test(r.error.message))throw r.error;throw new Error('already registered')}}
+   await newRecoveryCode();
   }else{
    const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error}
  }catch(e){
@@ -212,6 +247,21 @@ $('go').onclick=async()=>{
   else if(/invalid/i.test(m)&&/email/i.test(m))note('El servidor rechazó el formato interno de la cuenta. Avísame para ajustarlo.');
   else note(m)}
  $('go').disabled=false};
+const CODE_CHARS='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+let curCode='',codeBusy=false;
+function genCode(){const b=new Uint8Array(16);crypto.getRandomValues(b);let s='';b.forEach(x=>s+=CODE_CHARS[x%32]);return s.match(/.{4}/g).join('-')}
+async function newRecoveryCode(){
+ if(codeBusy||!$('codeDlg').hidden)return;codeBusy=true;
+ try{
+  const code=genCode();
+  const {error}=await sb.rpc('set_recovery_code',{code});
+  if(error)return toast('No se pudo crear el código de recuperación: '+error.message);
+  curCode=code;$('codeBox').textContent=code;$('codeOk').checked=false;$('codeGo').disabled=true;$('codeDlg').hidden=false
+ }finally{codeBusy=false}}
+$('codeOk').onchange=()=>$('codeGo').disabled=!$('codeOk').checked;
+$('codeGo').onclick=()=>{$('codeDlg').hidden=true;curCode='';$('codeBox').textContent=''};
+$('codeCopy').onclick=async()=>{try{await navigator.clipboard.writeText(curCode);toast('Código copiado')}catch(e){toast('No se pudo copiar. Escríbelo o descárgalo.')}};
+$('codeDl').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['Respiro - código de recuperación\n'+curCode+'\n'],{type:'text/plain'}));a.download='respiro-codigo-recuperacion.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
 $('pass').onkeydown=e=>{if(e.key==='Enter')$('go').click()};
 
 if(ready)sb.auth.onAuthStateChange((ev,s)=>{
@@ -225,6 +275,7 @@ async function enter(){
  const n=myName();$('meName').textContent=n;paint($('meAv'),null,n);
  sb.from('profiles').select('avatar').eq('id',me.id).single().then(({data})=>{if(data){myAvatar=data.avatar;paint($('meAv'),myAvatar,n)}});
  sb.rpc('my_age').then(({data})=>{myAge=data;$('bGames').hidden=!(myAge>=GAMES_AGE)});
+ sb.rpc('has_recovery_code').then(({data})=>{if(data===false)newRecoveryCode()});
  loadContacts()}
 async function loadContacts(){
  const {data,error}=await sb.from('profiles').select('id,display_name,avatar').neq('id',me.id).order('display_name');
