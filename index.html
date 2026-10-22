@@ -34,6 +34,12 @@ input[type=text]:focus,input[type=password]:focus,input[type=date]:focus{border-
 .go{width:100%;margin-top:22px;padding:15px;border-radius:14px;background:linear-gradient(135deg,var(--gold2),var(--gold) 55%,#b8902a);color:#0a0f0c;font-weight:800;letter-spacing:.01em}.go:disabled{opacity:.6}
 .note{font-size:14px;min-height:20px;margin:12px 0 0;color:var(--bad)}.note.ok{color:var(--green)}
 .ver{text-align:center;color:var(--mute);font-size:12px;margin:22px 0 0}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}.stat b{display:block;font-size:22px;color:var(--gold2)}.stat span{font-size:12px;color:var(--mute)}
+.sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+.rrow{border-bottom:1px solid var(--line);padding:10px 0}.rrow p{margin:4px 0;font-size:14px}.rrow .meta{color:var(--mute);font-size:12px}
+.tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;margin-right:6px}
+.tag.open{background:rgba(255,122,122,.18);color:var(--bad)}.tag.reviewed{background:rgba(34,197,139,.18);color:var(--green)}.tag.dismissed{background:var(--panel2);color:var(--mute)}
+.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.actions button{padding:6px 12px;border-radius:999px;background:var(--panel2);color:var(--gold);font-size:13px}
 .lnk{display:block;margin:16px auto 0;color:var(--gold2);text-decoration:underline;font-size:14px}
 .code{font:700 22px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.08em;text-align:center;padding:16px;border:1px dashed var(--gold);border-radius:14px;color:var(--gold2);background:var(--bg);user-select:all;word-break:break-all;margin-bottom:6px}
 /* app */
@@ -108,6 +114,7 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
 <symbol id="i-t2" viewBox="0 0 24 24"><path d="M1.5 13l4.5 4.5L16 7.5"/><path d="M10.5 16.5l1 1L22 7.5"/></symbol>
 <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
 <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 8.9 8 10 4.6-1.1 8-5 8-10V5z"/><path d="m9 12 2 2 4-4"/></symbol>
 </defs></svg>
 
 <section id="auth">
@@ -122,14 +129,14 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
   <button class="go" id="go">Crear cuenta</button>
   <button class="lnk" id="forgot" type="button" hidden>Olvidé mi contraseña</button>
   <button class="lnk" id="backLog" type="button" hidden>Volver a entrar</button>
-  <p class="ver" id="ver">Versión 11</p>
+  <p class="ver" id="ver">Versión 12</p>
  </div></div>
 </section>
 
 <section id="app" hidden>
  <aside>
   <div class="me"><button class="av" id="meAv" aria-label="Cambiar avatar"></button><b id="meName"></b>
-   <button class="ib" id="bSet" aria-label="Ajustes"><svg class="i"><use href="#i-gear"/></svg></button><button class="ib" id="out" aria-label="Salir"><svg class="i"><use href="#i-out"/></svg></button></div>
+   <button class="ib" id="bAdmin" aria-label="Panel de administración" hidden><svg class="i"><use href="#i-shield"/></svg></button><button class="ib" id="bSet" aria-label="Ajustes"><svg class="i"><use href="#i-gear"/></svg></button><button class="ib" id="out" aria-label="Salir"><svg class="i"><use href="#i-out"/></svg></button></div>
   <div class="srch"><input id="q" type="text" placeholder="Buscar por usuario exacto" aria-label="Buscar por usuario exacto" autocapitalize="none" autocomplete="off" spellcheck="false"><button class="ib" id="qGo" aria-label="Buscar"><svg class="i"><use href="#i-search"/></svg></button></div>
   <div class="list" id="list"></div>
  </aside>
@@ -175,8 +182,23 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
  <div class="row"><span></span><button id="setClose">Cerrar</button></div></div></div>
 <div class="dlg" id="optDlg" hidden role="dialog" aria-labelledby="optName"><div class="box"><h3 id="optName"></h3>
  <button class="gbtn dng" id="optBlock">Bloquear usuario<small>No podrá escribirte ni llamarte, y no verá tu usuario en búsquedas.</small></button>
+ <button class="gbtn" id="optReport">Reportar usuario<small>Un administrador revisará tu reporte.</small></button>
  <div class="row"><span></span><button id="optClose">Cerrar</button></div></div></div>
 <div id="idle" hidden role="alert">Tu sesión se cerrará en 1 minuto por inactividad. Toca aquí para continuar.</div>
+<div class="dlg" id="repDlg" hidden role="dialog" aria-labelledby="repT"><div class="box"><h3 id="repT">Reportar usuario</h3>
+ <p>Cuéntale al administrador qué pasó. Solo él puede ver este reporte.</p>
+ <textarea id="repText" rows="4" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)" maxlength="500" placeholder="Describe el problema"></textarea>
+ <p class="note" id="repMsg" style="min-height:0"></p>
+ <div class="row"><button id="repCancel">Cancelar</button><button class="go" id="repSend" style="width:auto;margin:0;padding:10px 18px">Enviar</button></div></div></div>
+
+<div class="dlg" id="adminDlg" hidden role="dialog" aria-labelledby="adT"><div class="box tall" style="max-width:520px">
+ <h3 id="adT">Panel de administración</h3>
+ <div class="sgrid" id="adStats"></div>
+ <div class="srow"><input id="adUser" type="text" placeholder="Buscar usuario exacto" autocapitalize="none" autocomplete="off"><button id="adSearchGo">Buscar</button></div>
+ <div id="adUserBox"></div>
+ <h4>Reportes</h4>
+ <div id="adReports"></div>
+ <div class="row"><span></span><button id="adClose">Cerrar</button></div></div></div>
 <div id="off" hidden role="status">Sin conexión. Reconectando…</div>
 <div id="toast" hidden></div>
 
@@ -251,7 +273,7 @@ function setMode(m){mode=m;
  $('go').textContent={reg:'Crear cuenta',log:'Entrar',forgot:'Cambiar contraseña'}[m];note('')}
 $('tReg').onclick=()=>setMode('reg');$('tLog').onclick=()=>setMode('log');
 $('forgot').onclick=()=>setMode('forgot');$('backLog').onclick=()=>setMode('log');
-if(ready)$('ver').textContent='Versión 11 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
+if(ready)$('ver').textContent='Versión 12 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
 try{const m0=sessionStorage.getItem('rsp_msg');if(m0){sessionStorage.removeItem('rsp_msg');note(m0,true)}}catch(e){}
 async function diagnose(){
  const host=new URL(SUPABASE_URL).host;let r;
@@ -335,6 +357,7 @@ async function enter(){
  const n=myName();$('meName').textContent='@'+n;paint($('meAv'),null,n);
  sb.from('profiles').select('avatar').eq('id',me.id).single().then(({data})=>{if(data){myAvatar=data.avatar;paint($('meAv'),myAvatar,n)}});
   sb.rpc('has_recovery_code').then(({data})=>{if(data===false)newRecoveryCode()});
+ sb.rpc('is_admin').then(({data})=>{iAmAdmin=!!data;$('bAdmin').hidden=!iAmAdmin});
  loadContacts()}
 async function loadContacts(activeId){
  const {data:mem,error}=await sb.from('conversation_members').select('conversation_id,user_id');
@@ -467,7 +490,7 @@ $('file').onchange=async e=>{
  if(r.error)toast(r.error.message)};
 
 /* ---------- ajustes, bloqueos, avisos ---------- */
-const blockedIds=new Set();let typT=null,lastTyp=0;
+const blockedIds=new Set();let typT=null,lastTyp=0,iAmAdmin=false;
 function showTyping(pl){if(!pl||!peer||pl.from!==peer.id)return;$('hSub').textContent='escribiendo…';clearTimeout(typT);typT=setTimeout(()=>{$('hSub').textContent=''},3000)}
 $('txt').addEventListener('input',()=>{if(chan&&Date.now()-lastTyp>2000){lastTyp=Date.now();chan.send({type:'broadcast',event:'typing',payload:{from:me.id}})}});
 function notifyNew(m){
@@ -509,6 +532,14 @@ $('setDel').onclick=async()=>{
  await secureLogout('Tu cuenta fue eliminada.')};
 $('bMore').onclick=()=>{if(!peer)return;$('optName').textContent='@'+peer.display_name;$('optDlg').hidden=false};
 $('optClose').onclick=()=>$('optDlg').hidden=true;
+$('optReport').onclick=()=>{if(!peer)return;$('optDlg').hidden=true;$('repText').value='';$('repMsg').textContent='';$('repDlg').hidden=false};
+$('repCancel').onclick=()=>$('repDlg').hidden=true;
+$('repSend').onclick=async()=>{
+ const reason=$('repText').value.trim();
+ if(reason.length<3)return $('repMsg').textContent='Escribe un poco más sobre lo que pasó.';
+ const {error}=await sb.from('reports').insert({reporter_id:me.id,reported_id:peer.id,conversation_id:conv,reason});
+ if(error)return $('repMsg').textContent=error.message;
+ $('repDlg').hidden=true;toast('Reporte enviado. Gracias.')};
 $('optBlock').onclick=async()=>{
  if(!peer)return;
  if(!confirm('¿Bloquear a @'+peer.display_name+'? No podrá escribirte ni llamarte.'))return;
@@ -523,6 +554,59 @@ $('optBlock').onclick=async()=>{
 window.addEventListener('offline',()=>{$('off').hidden=false});
 window.addEventListener('online',()=>{$('off').hidden=true;if(me){if(conv)load();loadContacts(peer&&peer.id)}});
 if(!navigator.onLine)$('off').hidden=false;
+
+/* ---------- panel de administración ---------- */
+function statTile(n,l){return '<div class="stat"><b>'+n+'</b><span>'+l+'</span></div>'}
+async function openAdmin(){
+ if(!iAmAdmin)return;
+ $('adUser').value='';$('adUserBox').innerHTML='';$('adminDlg').hidden=false;
+ const {data,error}=await sb.rpc('admin_stats');
+ if(error||!data){$('adStats').innerHTML='<p class="hint" style="padding:0">No se pudieron cargar las estadísticas.</p>';return}
+ $('adStats').innerHTML=statTile(data.usuarios,'Usuarios')+statTile(data.nuevos_7d,'Nuevos (7 días)')+statTile(data.chats,'Chats')+
+  statTile(data.mensajes_24h,'Mensajes (24h)')+statTile(data.llamadas_24h,'Llamadas (24h)')+statTile(data.reportes_abiertos,'Reportes abiertos')+
+  statTile(data.suspendidos,'Suspendidos')+statTile(data.bloqueos,'Bloqueos');
+ await loadReports()}
+async function loadReports(){
+ const box=$('adReports');box.innerHTML='Cargando…';
+ const {data,error}=await sb.rpc('admin_list_reports');
+ if(error)return box.innerHTML='<p class="hint" style="padding:0">'+error.message+'</p>';
+ if(!data||!data.length)return box.innerHTML='<p class="hint" style="padding:0">No hay reportes.</p>';
+ box.innerHTML='';
+ data.forEach(r=>{const d=document.createElement('div');d.className='rrow';
+  d.innerHTML='<p><span class="tag '+r.status+'">'+({open:'Abierto',reviewed:'Revisado',dismissed:'Descartado'}[r.status])+'</span><b>@'+r.reported+'</b> reportado por @'+r.reporter+'</p>'+
+   '<p>'+(r.reason||'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))+'</p>'+
+   '<p class="meta">'+new Date(r.created_at).toLocaleString('es')+'</p>'+
+   '<div class="actions"><button data-a="susp">Suspender usuario</button><button data-a="rev">Marcar revisado</button><button data-a="dis">Descartar</button></div>';
+  d.querySelector('[data-a=rev]').onclick=()=>setReport(r.id,'reviewed');
+  d.querySelector('[data-a=dis]').onclick=()=>setReport(r.id,'dismissed');
+  d.querySelector('[data-a=susp]').onclick=()=>suspend(r.reported_id,r.reported);
+  box.append(d)})}
+async function setReport(id,status){const {error}=await sb.rpc('admin_set_report_status',{rid:id,new_status:status});if(error)return toast(error.message);await loadReports()}
+async function suspend(uid,uname){
+ const reason=prompt('¿Por qué suspendes a @'+uname+'? (se guarda como motivo)')||'';
+ if(reason===null)return;
+ const {error}=await sb.rpc('admin_suspend_user',{target:uid,reason});
+ if(error)return toast(error.message);
+ toast('@'+uname+' fue suspendido');await loadReports();if($('adUser').value)adSearch()}
+async function adSearch(){
+ const u=$('adUser').value.trim().toLowerCase();if(!u)return;
+ const {data,error}=await sb.rpc('admin_search_user',{uname:u});
+ const box=$('adUserBox');
+ if(error)return box.innerHTML='<p class="hint" style="padding:0">'+error.message+'</p>';
+ if(!data||!data.length)return box.innerHTML='<p class="hint" style="padding:0">No existe ese usuario.</p>';
+ const p=data[0];
+ box.innerHTML='<div class="rrow"><p><b>@'+p.username+'</b> '+(p.is_admin?'· admin':'')+' '+(p.suspended?'<span class="tag open">Suspendido</span>':'')+'</p>'+
+  '<p class="meta">Creado: '+new Date(p.created_at).toLocaleDateString('es')+'</p><div class="actions"></div></div>';
+ const act=box.querySelector('.actions');
+ if(!p.is_admin){
+  const b=document.createElement('button');b.textContent=p.suspended?'Levantar suspensión':'Suspender';
+  b.onclick=async()=>{
+   if(p.suspended){const {error}=await sb.rpc('admin_unsuspend_user',{target:p.id});if(error)return toast(error.message);toast('Suspensión levantada')}
+   else await suspend(p.id,p.username);
+   adSearch()};
+  act.append(b)}}
+$('bAdmin').onclick=openAdmin;$('adClose').onclick=()=>$('adminDlg').hidden=true;
+$('adSearchGo').onclick=adSearch;$('adUser').onkeydown=e=>{if(e.key==='Enter')adSearch()};
 
 /* ---------- llamadas ---------- */
 const ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]};
