@@ -44,6 +44,7 @@ aside{background:var(--panel);border-right:1px solid var(--line);display:flex;fl
 .ib{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:var(--gold);transition:.2s}.ib:hover{background:var(--panel2);color:var(--gold2)}
 .ib.gm{width:auto;padding:0 14px;border-radius:999px;border:1px solid var(--gold);font-weight:700;font-size:13px}
 .list{overflow:auto;flex:1;padding:8px}
+.srch{display:flex;gap:6px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}.srch input{flex:1;border-radius:999px;padding:11px 16px}
 .ct{display:flex;gap:12px;align-items:center;padding:12px;width:100%;text-align:left;border-radius:16px;border-left:3px solid transparent;transition:.15s}
 .ct b{font-weight:600}.ct:hover{background:var(--panel2)}.ct[aria-current=true]{background:var(--panel2);border-left-color:var(--gold)}
 .hint{padding:20px 16px;color:var(--mute)}
@@ -90,6 +91,7 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
 <symbol id="i-send" viewBox="0 0 24 24"><path d="m22 2-11 11M22 2l-7 20-4-9-9-4z"/></symbol>
 <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
 <symbol id="i-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
 </defs></svg>
 
 <section id="auth">
@@ -104,7 +106,7 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
   <button class="go" id="go">Crear cuenta</button>
   <button class="lnk" id="forgot" type="button" hidden>Olvidé mi contraseña</button>
   <button class="lnk" id="backLog" type="button" hidden>Volver a entrar</button>
-  <p class="ver" id="ver">Versión 7</p>
+  <p class="ver" id="ver">Versión 8</p>
  </div></div>
 </section>
 
@@ -112,6 +114,7 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
  <aside>
   <div class="me"><button class="av" id="meAv" aria-label="Cambiar avatar"></button><b id="meName"></b>
    <button class="ib" id="out" aria-label="Salir"><svg class="i"><use href="#i-out"/></svg></button></div>
+  <div class="srch"><input id="q" type="text" placeholder="Buscar por usuario exacto" aria-label="Buscar por usuario exacto" autocapitalize="none" autocomplete="off" spellcheck="false"><button class="ib" id="qGo" aria-label="Buscar"><svg class="i"><use href="#i-search"/></svg></button></div>
   <div class="list" id="list"></div>
  </aside>
  <main>
@@ -178,7 +181,7 @@ function setMode(m){mode=m;
  $('go').textContent={reg:'Crear cuenta',log:'Entrar',forgot:'Cambiar contraseña'}[m];note('')}
 $('tReg').onclick=()=>setMode('reg');$('tLog').onclick=()=>setMode('log');
 $('forgot').onclick=()=>setMode('forgot');$('backLog').onclick=()=>setMode('log');
-if(ready)$('ver').textContent='Versión 7 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
+if(ready)$('ver').textContent='Versión 8 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
 async function diagnose(){
  const host=new URL(SUPABASE_URL).host;let r;
  try{const res=await fetch(SUPABASE_URL+'/auth/v1/health',{headers:{apikey:SUPABASE_KEY}});r='el servidor respondió '+res.status}
@@ -255,18 +258,31 @@ $('out').onclick=()=>sb.auth.signOut();
 /* ---------- perfil, contactos ---------- */
 async function enter(){
  $('auth').hidden=true;$('app').hidden=false;listen();
- const n=myName();$('meName').textContent=n;paint($('meAv'),null,n);
+ const n=myName();$('meName').textContent='@'+n;paint($('meAv'),null,n);
  sb.from('profiles').select('avatar').eq('id',me.id).single().then(({data})=>{if(data){myAvatar=data.avatar;paint($('meAv'),myAvatar,n)}});
   sb.rpc('has_recovery_code').then(({data})=>{if(data===false)newRecoveryCode()});
  loadContacts()}
-async function loadContacts(){
- const {data,error}=await sb.from('profiles').select('id,display_name,avatar').neq('id',me.id).order('display_name');
+async function loadContacts(activeId){
+ const {data:mem,error}=await sb.from('conversation_members').select('conversation_id,user_id');
+ if(error)return toast('No se pudieron cargar tus chats: '+error.message);
+ const ids=[...new Set((mem||[]).filter(r=>r.user_id!==me.id).map(r=>r.user_id))];
  const l=$('list');l.innerHTML='';
- if(error)return toast('No se pudieron cargar los contactos: '+error.message);
- if(!data.length){l.innerHTML='<p class="hint">Aún no hay otros usuarios. Pide a alguien que cree su cuenta en Respiro.</p>';return}
+ if(!ids.length){l.innerHTML='<p class="hint">Aún no tienes chats. Busca a alguien por su nombre de usuario exacto para empezar.</p>';return}
+ const {data,error:e2}=await sb.from('profiles').select('id,display_name,avatar').in('id',ids).order('display_name');
+ if(e2)return toast('No se pudieron cargar tus contactos: '+e2.message);
  data.forEach(p=>{const b=document.createElement('button');b.className='ct';
+  b.setAttribute('aria-current',p.id===activeId);
   b.innerHTML='<div class="av"></div><b></b>';paint(b.querySelector('.av'),p.avatar,p.display_name);b.querySelector('b').textContent=p.display_name;
-  b.onclick=()=>openChat(p,b);l.append(b)})}
+  b.onclick=()=>openChat(p);l.append(b)})}
+async function searchUser(){
+ const u=$('q').value.trim().toLowerCase().replace(/^@/,'');
+ if(!/^[a-z0-9_]{3,20}$/.test(u))return toast('Escribe el usuario exacto: 3 a 20 letras, números o guion bajo.');
+ const {data,error}=await sb.rpc('find_user',{uname:u});
+ if(error)return toast('No se pudo buscar: '+error.message);
+ if(!data||!data.length)return toast('No existe un usuario con ese nombre.');
+ $('q').value='';openChat(data[0])}
+$('qGo').onclick=searchUser;$('q').onkeydown=e=>{if(e.key==='Enter')searchUser()};
+setInterval(()=>{if(me&&!$('app').hidden)loadContacts(peer&&peer.id)},20000);
 function openPick(){const g=$('grid');g.innerHTML='';
  Object.entries(ANIMALS).forEach(([k,e])=>{const b=document.createElement('button');b.textContent=e;b.setAttribute('aria-label',k);b.setAttribute('aria-pressed',k===myAvatar);b.onclick=()=>setAvatar(k);g.append(b)});
  $('pick').hidden=false}
@@ -276,19 +292,12 @@ $('meAv').onclick=openPick;$('noAv').onclick=()=>setAvatar(null);$('closePick').
 
 /* ---------- chat ---------- */
 async function findOrCreate(p){
- const {data:mine}=await sb.from('conversation_members').select('conversation_id, conversations!inner(is_group)').eq('user_id',me.id).eq('conversations.is_group',false);
- const ids=(mine||[]).map(r=>r.conversation_id);
- if(ids.length){const {data:sh}=await sb.from('conversation_members').select('conversation_id').eq('user_id',p.id).in('conversation_id',ids).limit(1);
-  if(sh&&sh.length)return sh[0].conversation_id}
- const {data:c,error}=await sb.from('conversations').insert({created_by:me.id,is_group:false}).select('id').single();
- if(error)throw error;
- const {error:e2}=await sb.from('conversation_members').insert([{conversation_id:c.id,user_id:me.id,role:'admin'},{conversation_id:c.id,user_id:p.id}]);
- if(e2)throw e2;return c.id}
+ const {data,error}=await sb.rpc('start_chat',{other:p.id});
+ if(error)throw error;return data}
 async function openChat(p,btn){
  try{
-  document.querySelectorAll('.ct').forEach(x=>x.setAttribute('aria-current',x===btn));
   peer=p;$('hName').textContent=p.display_name;paint($('hAv'),p.avatar,p.display_name);$('app').classList.add('open');
-  conv=await findOrCreate(p);await load()
+  conv=await findOrCreate(p);await load();loadContacts(p.id)
  }catch(e){toast('No se pudo abrir el chat: '+e.message)}}
 $('back').onclick=()=>$('app').classList.remove('open');
 
