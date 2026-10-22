@@ -93,20 +93,18 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
 </defs></svg>
 
 <section id="auth">
- <div class="hero"><h1>Respiro</h1><p>Escribe, comparte fotos y documentos, y habla con quien quieras. Solo para mayores de 18.</p>
+ <div class="hero"><h1>Respiro</h1><p>Escribe, comparte fotos y documentos, y habla con quien quieras.</p>
   <div class="chips"><span>Mensajes</span><span>Fotos y archivos</span><span>Llamadas</span><span>Videollamadas</span></div></div>
  <div class="fw"><div class="card">
   <div class="tabs"><button id="tReg" aria-selected="true">Crear cuenta</button><button id="tLog" aria-selected="false">Entrar</button></div>
   <label for="user">Usuario</label><input id="user" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="tu_usuario">
   <div id="fCode" hidden><label for="rcode">Código de recuperación</label><input id="rcode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX-XXXX-XXXX"></div>
   <label for="pass" id="lblPass">Contraseña</label><input id="pass" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres">
-  <div id="fDob"><label for="dob">Fecha de nacimiento</label><input id="dob" type="date" autocomplete="bday">
-   <label class="chk"><input type="checkbox" id="ageok"><span>Confirmo que esta fecha es correcta y que tengo 18 años o más. No se podrá cambiar después.</span></label></div>
   <p class="note" id="note" role="alert"></p>
   <button class="go" id="go">Crear cuenta</button>
   <button class="lnk" id="forgot" type="button" hidden>Olvidé mi contraseña</button>
   <button class="lnk" id="backLog" type="button" hidden>Volver a entrar</button>
-  <p class="ver" id="ver">Versión 6</p>
+  <p class="ver" id="ver">Versión 7</p>
  </div></div>
 </section>
 
@@ -118,7 +116,6 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
  </aside>
  <main>
   <div class="top"><button class="ib back" id="back" aria-label="Volver"><svg class="i"><use href="#i-back"/></svg></button><div class="av" id="hAv"></div><b id="hName">Elige un contacto</b>
-   <button class="ib gm" id="bGames" aria-label="Juegos 21+" hidden>21+</button>
    <button class="ib" id="bCall" aria-label="Llamar"><svg class="i"><use href="#i-phone"/></svg></button>
    <button class="ib" id="bVid" aria-label="Videollamada"><svg class="i"><use href="#i-video"/></svg></button></div>
   <div class="msgs" id="msgs"><p class="empty">Elige un contacto de la lista para empezar a chatear.</p></div>
@@ -133,11 +130,6 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
 <div class="dlg" id="pick" hidden role="dialog" aria-labelledby="pickT"><div class="box"><h3 id="pickT">Elige tu avatar</h3><p>Así te verán tus contactos.</p>
  <div class="grid" id="grid"></div><div class="row"><button id="noAv">Usar iniciales</button><button id="closePick">Cerrar</button></div></div></div>
 
-<div class="dlg" id="games" hidden role="dialog" aria-labelledby="gT"><div class="box"><h3 id="gT">Juegos 21+</h3>
- <p>Preguntas para personas adultas. Solo funcionan si todos en el chat tienen 21 años o más. Cualquiera puede pasar una pregunta.</p>
- <button class="gbtn" id="gFunny">Chistosas<small>Anécdotas y humor sobre citas</small></button>
- <button class="gbtn" id="gHot">Calientes<small>Coqueteo y preguntas picantes, sin contenido explícito</small></button>
- <div class="row"><span></span><button id="closeG">Cerrar</button></div></div></div>
 
 <div id="inc" hidden role="alertdialog" aria-labelledby="incName"><b id="incName"></b><span id="incKind"></span>
  <div><button class="go" id="accept">Contestar</button><button class="rej" id="reject">Rechazar</button></div></div>
@@ -179,15 +171,14 @@ function note(t,ok){$('note').textContent=t;$('note').className='note'+(ok?' ok'
 /* ---------- acceso: solo usuario y contraseña ---------- */
 function setMode(m){mode=m;
  $('tReg').setAttribute('aria-selected',m==='reg');$('tLog').setAttribute('aria-selected',m==='log'||m==='forgot');
- $('fDob').hidden=m!=='reg';$('fCode').hidden=m!=='forgot';
+ $('fCode').hidden=m!=='forgot';
  $('lblPass').textContent=m==='forgot'?'Nueva contraseña':'Contraseña';
  $('pass').autocomplete=(m==='reg'||m==='forgot')?'new-password':'current-password';
  $('forgot').hidden=m!=='log';$('backLog').hidden=m!=='forgot';
  $('go').textContent={reg:'Crear cuenta',log:'Entrar',forgot:'Cambiar contraseña'}[m];note('')}
 $('tReg').onclick=()=>setMode('reg');$('tLog').onclick=()=>setMode('log');
 $('forgot').onclick=()=>setMode('forgot');$('backLog').onclick=()=>setMode('log');
-$('dob').max=new Date().toISOString().slice(0,10);
-if(ready)$('ver').textContent='Versión 6 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
+if(ready)$('ver').textContent='Versión 7 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
 async function diagnose(){
  const host=new URL(SUPABASE_URL).host;let r;
  try{const res=await fetch(SUPABASE_URL+'/auth/v1/health',{headers:{apikey:SUPABASE_KEY}});r='el servidor respondió '+res.status}
@@ -218,19 +209,11 @@ $('go').onclick=async()=>{
  const u=$('user').value.trim().toLowerCase(),password=$('pass').value;
  if(!/^[a-z0-9_]{3,20}$/.test(u))return note('El usuario debe tener de 3 a 20 caracteres: letras, números o guion bajo.');
  if(password.length<8)return note('La contraseña necesita al menos 8 caracteres.');
- let dob=null;
- if(mode==='reg'){
-  dob=$('dob').value;const a=ageOf(dob);
-  if(a===null)return note('Escribe tu fecha de nacimiento.');
-  if(a>110)return note('Revisa tu fecha de nacimiento.');
-  if(a<MIN_AGE)return note('Respiro es solo para mayores de '+MIN_AGE+' años.');
-  if(!$('ageok').checked)return note('Confirma que tu fecha de nacimiento es correcta.');
- }
  const email=u+'@'+DOMAIN;
  $('go').disabled=true;note('');
  try{
   if(mode==='reg'){
-   const {data,error}=await sb.auth.signUp({email,password,options:{data:{username:u,display_name:u,birth_date:dob}}});
+   const {data,error}=await sb.auth.signUp({email,password,options:{data:{username:u,display_name:u}}});
    if(error)throw error;
    if(!data.session){const r=await sb.auth.signInWithPassword({email,password});
     if(r.error){if(/not confirmed/i.test(r.error.message))throw r.error;throw new Error('already registered')}}
@@ -243,7 +226,7 @@ $('go').onclick=async()=>{
   else if(/already (been )?registered/i.test(m))note('Ese usuario ya existe. Elige otro.');
   else if(m==='Invalid login credentials')note('Usuario o contraseña incorrectos.');
   else if(/email not confirmed/i.test(m))note('Falta desactivar "Confirm email" en Supabase (Authentication → Sign In / Providers → Email).');
-  else if(/database error/i.test(m))note('No se pudo crear la cuenta. Revisa el usuario y tu fecha de nacimiento (mayores de 18).');
+  else if(/database error/i.test(m))note('No se pudo crear la cuenta. Revisa el usuario e inténtalo de nuevo.');
   else if(/invalid/i.test(m)&&/email/i.test(m))note('El servidor rechazó el formato interno de la cuenta. Avísame para ajustarlo.');
   else note(m)}
  $('go').disabled=false};
@@ -274,8 +257,7 @@ async function enter(){
  $('auth').hidden=true;$('app').hidden=false;listen();
  const n=myName();$('meName').textContent=n;paint($('meAv'),null,n);
  sb.from('profiles').select('avatar').eq('id',me.id).single().then(({data})=>{if(data){myAvatar=data.avatar;paint($('meAv'),myAvatar,n)}});
- sb.rpc('my_age').then(({data})=>{myAge=data;$('bGames').hidden=!(myAge>=GAMES_AGE)});
- sb.rpc('has_recovery_code').then(({data})=>{if(data===false)newRecoveryCode()});
+  sb.rpc('has_recovery_code').then(({data})=>{if(data===false)newRecoveryCode()});
  loadContacts()}
 async function loadContacts(){
  const {data,error}=await sb.from('profiles').select('id,display_name,avatar').neq('id',me.id).order('display_name');
@@ -372,19 +354,6 @@ $('file').onchange=async e=>{
  if(error)return toast('No se pudo subir: '+error.message);
  const r=await sb.from('messages').insert({conversation_id:conv,sender_id:me.id,kind:f.type.startsWith('image/')?'image':'file',attachment_path:path,attachment_name:f.name,attachment_type:f.type,attachment_size:f.size});
  if(r.error)toast(r.error.message)};
-
-/* ---------- juegos 21+ ---------- */
-$('bGames').onclick=()=>conv?($('games').hidden=false):toast('Elige un contacto primero.');
-$('closeG').onclick=()=>$('games').hidden=true;
-$('gFunny').onclick=()=>play('funny');$('gHot').onclick=()=>play('hot');
-async function play(kind){
- const {data:ok,error}=await sb.rpc('game_allowed',{conv});
- if(error||!ok){$('games').hidden=true;return toast('Los juegos 21+ solo funcionan si todos en el chat tienen 21 años o más.')}
- const k=conv+kind,u=usedQ[k]||(usedQ[k]=[]);if(u.length>=Q[kind].length)u.length=0;
- let i;do{i=Math.floor(Math.random()*Q[kind].length)}while(u.includes(i));u.push(i);
- $('games').hidden=true;
- const r=await sb.from('messages').insert({conversation_id:conv,sender_id:me.id,kind:'game',body:(kind==='hot'?'Calientes':'Chistosas')+'|'+Q[kind][i]});
- if(r.error)toast('No se pudo enviar la pregunta: '+r.error.message)}
 
 /* ---------- llamadas ---------- */
 const ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]};
