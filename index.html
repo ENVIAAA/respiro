@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#050807">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Respiro"><meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23050807'/%3E%3Ccircle cx='32' cy='32' r='22' fill='none' stroke='%23d4af37' stroke-width='4'/%3E%3Ctext x='32' y='42' font-size='28' font-family='sans-serif' font-weight='700' text-anchor='middle' fill='%2322c58b'%3ER%3C/text%3E%3C/svg%3E">
 <title>Respiro</title>
 <style>
 :root{--bg:#050807;--panel:#0b1510;--panel2:#10201a;--line:#1a3226;--ink:#eaf3ec;--mute:#85a091;--green:#22c58b;--green2:#12795a;--gold:#d4af37;--gold2:#f2da7c;--bad:#ff7a7a;--r:18px;color-scheme:dark}
@@ -59,6 +61,7 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
 .m.game small{display:block;color:var(--gold2);font-weight:700;margin-bottom:6px;letter-spacing:.03em}
 .m img{display:block;max-width:100%;border-radius:12px;margin-bottom:4px}.m a{color:inherit;font-weight:700}
 .m time{display:block;font-size:11px;opacity:.65;margin-top:3px;text-align:right}.m.game time{text-align:center}
+.tk{display:inline-flex;margin-left:6px;vertical-align:-4px;color:rgba(255,255,255,.7)}.tk svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}.tk.r{color:#7ad7ff}
 .empty{margin:auto;color:var(--mute);text-align:center;max-width:30ch}
 .cp{display:flex;gap:8px;align-items:center;padding:12px 16px;background:var(--panel);border-top:1px solid var(--line)}
 .cp input[type=text]{flex:1;border-radius:999px;padding:13px 20px;background:var(--panel2)}
@@ -78,6 +81,14 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
 #call>*:not(video){position:relative;z-index:1;text-shadow:0 1px 6px #000}#call h2{font-size:28px;margin:0}
 .ctl{display:flex;gap:12px;margin-top:20px}.ctl button{padding:14px 22px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);font-weight:700;text-shadow:none}
 .ctl .end{background:var(--bad);color:#150505;border:0}.ctl button[aria-pressed=true]{background:var(--gold);color:#0a0f0c}
+.hn{flex:1;min-width:0;display:flex;flex-direction:column;margin-left:4px;line-height:1.2}.hn b{flex:none;margin:0}
+#hSub{font-size:12px;color:var(--gold2);min-height:14px}
+.bd{background:var(--gold);color:#0a0f0c;border-radius:999px;font-size:12px;font-weight:800;padding:2px 8px;margin-left:auto}
+.box.tall{max-height:88vh;overflow:auto}.box h4{margin:16px 0 6px;color:var(--gold2)}
+.srow{display:flex;gap:8px;align-items:center;margin:8px 0}.srow input{flex:1}.srow button{padding:10px 14px;border-radius:12px;background:var(--panel2);color:var(--gold)}
+.brow{display:flex;justify-content:space-between;align-items:center;padding:8px 0}.brow button{color:var(--gold)}
+.dng{color:var(--bad)}
+#off{position:fixed;top:0;left:0;right:0;background:var(--bad);color:#150505;text-align:center;padding:8px;z-index:30;font-weight:700}
 @media (max-width:760px){#auth{grid-template-columns:1fr}.hero{padding:32px 24px;min-height:34vh}
 #app{grid-template-columns:1fr}#app.open aside{display:none}#app:not(.open) main{display:none}.back{display:grid}.m{max-width:86%}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -92,6 +103,10 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
 <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
 <symbol id="i-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
 <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
+<symbol id="i-t1" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+<symbol id="i-t2" viewBox="0 0 24 24"><path d="M1.5 13l4.5 4.5L16 7.5"/><path d="M10.5 16.5l1 1L22 7.5"/></symbol>
+<symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+<symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/></symbol>
 </defs></svg>
 
 <section id="auth">
@@ -106,25 +121,26 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
   <button class="go" id="go">Crear cuenta</button>
   <button class="lnk" id="forgot" type="button" hidden>Olvidé mi contraseña</button>
   <button class="lnk" id="backLog" type="button" hidden>Volver a entrar</button>
-  <p class="ver" id="ver">Versión 8</p>
+  <p class="ver" id="ver">Versión 10</p>
  </div></div>
 </section>
 
 <section id="app" hidden>
  <aside>
   <div class="me"><button class="av" id="meAv" aria-label="Cambiar avatar"></button><b id="meName"></b>
-   <button class="ib" id="out" aria-label="Salir"><svg class="i"><use href="#i-out"/></svg></button></div>
+   <button class="ib" id="bSet" aria-label="Ajustes"><svg class="i"><use href="#i-gear"/></svg></button><button class="ib" id="out" aria-label="Salir"><svg class="i"><use href="#i-out"/></svg></button></div>
   <div class="srch"><input id="q" type="text" placeholder="Buscar por usuario exacto" aria-label="Buscar por usuario exacto" autocapitalize="none" autocomplete="off" spellcheck="false"><button class="ib" id="qGo" aria-label="Buscar"><svg class="i"><use href="#i-search"/></svg></button></div>
   <div class="list" id="list"></div>
  </aside>
  <main>
-  <div class="top"><button class="ib back" id="back" aria-label="Volver"><svg class="i"><use href="#i-back"/></svg></button><div class="av" id="hAv"></div><b id="hName">Elige un contacto</b>
+  <div class="top"><button class="ib back" id="back" aria-label="Volver"><svg class="i"><use href="#i-back"/></svg></button><div class="av" id="hAv"></div><div class="hn"><b id="hName">Elige un contacto</b><span id="hSub" aria-live="polite"></span></div>
+   <button class="ib" id="bMore" aria-label="Más opciones" hidden><svg class="i"><use href="#i-more"/></svg></button>
    <button class="ib" id="bCall" aria-label="Llamar"><svg class="i"><use href="#i-phone"/></svg></button>
    <button class="ib" id="bVid" aria-label="Videollamada"><svg class="i"><use href="#i-video"/></svg></button></div>
-  <div class="msgs" id="msgs"><p class="empty">Elige un contacto de la lista para empezar a chatear.</p></div>
+  <div class="msgs" id="msgs" role="log" aria-live="polite"><p class="empty">Elige un contacto de la lista para empezar a chatear.</p></div>
   <div class="cp">
    <button class="ib" id="bAtt" aria-label="Adjuntar foto o documento"><svg class="i"><use href="#i-clip"/></svg></button><input type="file" id="file" hidden>
-   <input type="text" id="txt" placeholder="Escribe un mensaje" aria-label="Mensaje" autocomplete="off">
+   <input type="text" id="txt" placeholder="Escribe un mensaje" aria-label="Mensaje" autocomplete="off" maxlength="4000">
    <button class="snd" id="bSend" aria-label="Enviar"><svg class="i"><use href="#i-send"/></svg></button>
   </div>
  </main>
@@ -145,6 +161,21 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
  <div class="row"><button id="codeCopy">Copiar</button><button id="codeDl">Descargar</button></div>
  <label class="chk"><input type="checkbox" id="codeOk"><span>Ya guardé mi código.</span></label>
  <button class="go" id="codeGo" disabled>Continuar</button></div></div>
+<div class="dlg" id="setDlg" hidden role="dialog" aria-labelledby="stT"><div class="box tall"><h3 id="stT">Ajustes</h3>
+ <div class="srow"><b id="setUser"></b><button id="setCopy">Copiar usuario</button></div>
+ <button class="gbtn" id="setAv">Cambiar avatar</button>
+ <button class="gbtn" id="setNotif">Activar notificaciones</button>
+ <label for="setPass">Cambiar contraseña</label>
+ <div class="srow"><input id="setPass" type="password" autocomplete="new-password" placeholder="Nueva contraseña (mín. 8)"><button id="setPassGo">Guardar</button></div>
+ <p class="note" id="setMsg" style="min-height:0"></p>
+ <button class="gbtn" id="setCode">Crear nuevo código de recuperación</button>
+ <h4>Usuarios bloqueados</h4><div id="setBlocked"></div>
+ <button class="gbtn dng" id="setDel" style="margin-top:14px">Eliminar mi cuenta</button>
+ <div class="row"><span></span><button id="setClose">Cerrar</button></div></div></div>
+<div class="dlg" id="optDlg" hidden role="dialog" aria-labelledby="optName"><div class="box"><h3 id="optName"></h3>
+ <button class="gbtn dng" id="optBlock">Bloquear usuario<small>No podrá escribirte ni llamarte, y no verá tu usuario en búsquedas.</small></button>
+ <div class="row"><span></span><button id="optClose">Cerrar</button></div></div></div>
+<div id="off" hidden role="status">Sin conexión. Reconectando…</div>
 <div id="toast" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -181,7 +212,7 @@ function setMode(m){mode=m;
  $('go').textContent={reg:'Crear cuenta',log:'Entrar',forgot:'Cambiar contraseña'}[m];note('')}
 $('tReg').onclick=()=>setMode('reg');$('tLog').onclick=()=>setMode('log');
 $('forgot').onclick=()=>setMode('forgot');$('backLog').onclick=()=>setMode('log');
-if(ready)$('ver').textContent='Versión 8 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
+if(ready)$('ver').textContent='Versión 10 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
 async function diagnose(){
  const host=new URL(SUPABASE_URL).host;let r;
  try{const res=await fetch(SUPABASE_URL+'/auth/v1/health',{headers:{apikey:SUPABASE_KEY}});r='el servidor respondió '+res.status}
@@ -252,12 +283,12 @@ $('pass').onkeydown=e=>{if(e.key==='Enter')$('go').click()};
 
 if(ready)sb.auth.onAuthStateChange((ev,s)=>{
  if(s&&s.user){if(!me||me.id!==s.user.id){me=s.user;enter()}}
- else if(me){if(pc)endCall(true);me=null;conv=null;if(chan)sb.removeChannel(chan);if(inbox){sb.removeChannel(inbox);inbox=null}$('app').hidden=true;$('auth').hidden=false}});
+ else if(me){if(pc)endCall(true);me=null;conv=null;if(chan)sb.removeChannel(chan);if(inbox){sb.removeChannel(inbox);inbox=null}if(gchan){sb.removeChannel(gchan);gchan=null}$('app').hidden=true;$('auth').hidden=false}});
 $('out').onclick=()=>sb.auth.signOut();
 
 /* ---------- perfil, contactos ---------- */
 async function enter(){
- $('auth').hidden=true;$('app').hidden=false;listen();
+ $('auth').hidden=true;$('app').hidden=false;listen();markDelivered();listenMsgs();
  const n=myName();$('meName').textContent='@'+n;paint($('meAv'),null,n);
  sb.from('profiles').select('avatar').eq('id',me.id).single().then(({data})=>{if(data){myAvatar=data.avatar;paint($('meAv'),myAvatar,n)}});
   sb.rpc('has_recovery_code').then(({data})=>{if(data===false)newRecoveryCode()});
@@ -265,7 +296,14 @@ async function enter(){
 async function loadContacts(activeId){
  const {data:mem,error}=await sb.from('conversation_members').select('conversation_id,user_id');
  if(error)return toast('No se pudieron cargar tus chats: '+error.message);
- const ids=[...new Set((mem||[]).filter(r=>r.user_id!==me.id).map(r=>r.user_id))];
+ const {data:bl}=await sb.from('blocks').select('blocked_id');
+ blockedIds.clear();(bl||[]).forEach(r=>blockedIds.add(r.blocked_id));
+ const peerOf=new Map();(mem||[]).forEach(r=>{if(r.user_id!==me.id)peerOf.set(r.conversation_id,r.user_id)});
+ const ids=[...new Set([...peerOf.values()])].filter(id=>!blockedIds.has(id));
+ const {data:un}=await sb.from('messages').select('conversation_id').neq('sender_id',me.id).is('read_at',null).limit(1000);
+ const unread=new Map();(un||[]).forEach(r=>{const pid=peerOf.get(r.conversation_id);if(pid)unread.set(pid,(unread.get(pid)||0)+1)});
+ let total=0;ids.forEach(id=>{if(id!==activeId)total+=unread.get(id)||0});
+ document.title=total?'('+total+') Respiro':'Respiro';
  const l=$('list');l.innerHTML='';
  if(!ids.length){l.innerHTML='<p class="hint">Aún no tienes chats. Busca a alguien por su nombre de usuario exacto para empezar.</p>';return}
  const {data,error:e2}=await sb.from('profiles').select('id,display_name,avatar').in('id',ids).order('display_name');
@@ -273,6 +311,8 @@ async function loadContacts(activeId){
  data.forEach(p=>{const b=document.createElement('button');b.className='ct';
   b.setAttribute('aria-current',p.id===activeId);
   b.innerHTML='<div class="av"></div><b></b>';paint(b.querySelector('.av'),p.avatar,p.display_name);b.querySelector('b').textContent=p.display_name;
+  const n=unread.get(p.id)||0;
+  if(n&&p.id!==activeId){const bd=document.createElement('span');bd.className='bd';bd.textContent=n>99?'99+':n;bd.setAttribute('aria-label',n+' mensajes sin leer');b.append(bd)}
   b.onclick=()=>openChat(p);l.append(b)})}
 async function searchUser(){
  const u=$('q').value.trim().toLowerCase().replace(/^@/,'');
@@ -290,13 +330,22 @@ async function setAvatar(k){const {error}=await sb.from('profiles').update({avat
  if(error)return toast(error.message);myAvatar=k;paint($('meAv'),k,myName());$('pick').hidden=true;toast('Avatar actualizado')}
 $('meAv').onclick=openPick;$('noAv').onclick=()=>setAvatar(null);$('closePick').onclick=()=>$('pick').hidden=true;
 
+/* ---------- entregado ---------- */
+let gchan=null,lcT=null;
+function markDelivered(){if(me)sb.rpc('mark_delivered').then(()=>{})}
+function listenMsgs(){
+ if(gchan)sb.removeChannel(gchan);
+ gchan=sb.channel('g-'+me.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},x=>{
+  if(x.new.sender_id!==me.id){markDelivered();notifyNew(x.new);clearTimeout(lcT);lcT=setTimeout(()=>loadContacts(peer&&peer.id),1000)}}).subscribe()}
+window.addEventListener('online',markDelivered);
+
 /* ---------- chat ---------- */
 async function findOrCreate(p){
  const {data,error}=await sb.rpc('start_chat',{other:p.id});
  if(error)throw error;return data}
 async function openChat(p,btn){
  try{
-  peer=p;$('hName').textContent=p.display_name;paint($('hAv'),p.avatar,p.display_name);$('app').classList.add('open');
+  peer=p;$('hName').textContent=p.display_name;$('hSub').textContent='';$('bMore').hidden=false;paint($('hAv'),p.avatar,p.display_name);$('app').classList.add('open');
   conv=await findOrCreate(p);await load();loadContacts(p.id)
  }catch(e){toast('No se pudo abrir el chat: '+e.message)}}
 $('back').onclick=()=>$('app').classList.remove('open');
@@ -312,6 +361,7 @@ async function load(){
  if(chan)sb.removeChannel(chan);
  const f='conversation_id=eq.'+conv;
  chan=sb.channel('m-'+conv)
+  .on('broadcast',{event:'typing'},x=>showTyping(x.payload))
   .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:f},x=>add(x.new).then(markRead))
   .on('postgres_changes',{event:'UPDATE',schema:'public',table:'messages',filter:f},x=>setExpiry(x.new))
   .on('postgres_changes',{event:'DELETE',schema:'public',table:'messages'},x=>x.old&&drop(x.old.id))
@@ -328,16 +378,25 @@ async function add(m){
  }else{
   if(m.kind!=='text'&&m.attachment_path){
    const {data}=await sb.storage.from('attachments').createSignedUrl(m.attachment_path,3600);
-   if(data){if(m.kind==='image'){const im=new Image();im.src=data.signedUrl;im.alt=m.attachment_name||'Foto';d.append(im)}
+   if(data){if(m.kind==='image'){const im=new Image();im.src=data.signedUrl;im.alt=m.attachment_name||'Foto';const al=document.createElement('a');al.href=data.signedUrl;al.target='_blank';al.rel='noopener';al.append(im);d.append(al)}
     else{const a=document.createElement('a');a.href=data.signedUrl;a.target='_blank';a.rel='noopener';a.textContent=m.attachment_name||'Documento';d.append(a)}}}
   if(m.body){const s=document.createElement('span');s.textContent=m.body;d.append(s)}}
- const t=document.createElement('time');t.textContent=hm(m.created_at);d.append(t);it.el=d;it.time=t;
+ const t=document.createElement('time');t.innerHTML='<span class="tt"></span><span class="tkw"></span>';d.append(t);it.el=d;it.time=t;
  const box=$('msgs');const e=box.querySelector('.empty');if(e)e.remove();
  box.append(d);box.scrollTop=box.scrollHeight;setExpiry(m)}
+function tickHTML(m){
+ if(!me||m.sender_id!==me.id||m.kind==='game')return '';
+ if(m.read_at)return '<span class="tk r" role="img" aria-label="Leído"><svg><use href="#i-t2"/></svg></span>';
+ if(m.delivered_at)return '<span class="tk" role="img" aria-label="Entregado"><svg><use href="#i-t2"/></svg></span>';
+ return '<span class="tk" role="img" aria-label="Enviado"><svg><use href="#i-t1"/></svg></span>'}
+function refresh(it){
+ const m=it.m;
+ it.time.querySelector('.tt').textContent=hm(m.created_at)+(m.expires_at?' · leído, se borrará en 1 min':'');
+ it.time.querySelector('.tkw').innerHTML=tickHTML(m)}
 function setExpiry(m){
  const it=items.get(m.id);if(!it)return;it.m=m;
+ if(it.el)refresh(it);
  if(!m.expires_at||!it.el)return;
- it.time.textContent=hm(m.created_at)+' · leído, se borrará en 1 min';
  clearTimeout(it.t);it.t=setTimeout(()=>purge(m),Math.max(new Date(m.expires_at)-Date.now(),0))}
 function purge(m){
  drop(m.id);
@@ -347,7 +406,7 @@ function drop(id){
  const it=items.get(id);if(!it)return;clearTimeout(it.t);if(it.el)it.el.remove();items.delete(id);
  const box=$('msgs');if(!items.size&&!box.querySelector('.empty'))box.innerHTML=EMPTY}
 function markRead(){if(conv&&document.visibilityState==='visible')sb.rpc('mark_read',{conv}).then(()=>{})}
-document.addEventListener('visibilitychange',markRead);
+document.addEventListener('visibilitychange',()=>{markRead();markDelivered()});
 
 async function send(){
  const v=$('txt').value.trim();if(!v||!conv)return;$('txt').value='';
@@ -364,6 +423,65 @@ $('file').onchange=async e=>{
  const r=await sb.from('messages').insert({conversation_id:conv,sender_id:me.id,kind:f.type.startsWith('image/')?'image':'file',attachment_path:path,attachment_name:f.name,attachment_type:f.type,attachment_size:f.size});
  if(r.error)toast(r.error.message)};
 
+/* ---------- ajustes, bloqueos, avisos ---------- */
+const blockedIds=new Set();let typT=null,lastTyp=0;
+function showTyping(pl){if(!pl||!peer||pl.from!==peer.id)return;$('hSub').textContent='escribiendo…';clearTimeout(typT);typT=setTimeout(()=>{$('hSub').textContent=''},3000)}
+$('txt').addEventListener('input',()=>{if(chan&&Date.now()-lastTyp>2000){lastTyp=Date.now();chan.send({type:'broadcast',event:'typing',payload:{from:me.id}})}});
+function notifyNew(m){
+ if(blockedIds.has(m.sender_id))return;
+ if(document.visibilityState!=='visible'&&'Notification' in window&&Notification.permission==='granted'){try{new Notification('Respiro',{body:'Tienes un mensaje nuevo'})}catch(e){}}}
+function refreshNotifBtn(){const b=$('setNotif');
+ if(!('Notification' in window)){b.textContent='Notificaciones no disponibles en este navegador';b.disabled=true;return}
+ b.textContent=Notification.permission==='granted'?'Notificaciones activadas':Notification.permission==='denied'?'Notificaciones bloqueadas en el navegador':'Activar notificaciones'}
+$('setNotif').onclick=async()=>{if('Notification' in window&&Notification.permission==='default')await Notification.requestPermission();refreshNotifBtn()};
+async function renderBlocked(){
+ const box=$('setBlocked');box.innerHTML='';
+ const {data:bl}=await sb.from('blocks').select('blocked_id');
+ blockedIds.clear();(bl||[]).forEach(r=>blockedIds.add(r.blocked_id));
+ if(!blockedIds.size){box.innerHTML='<p class="hint" style="padding:0">No has bloqueado a nadie.</p>';return}
+ const {data:ps}=await sb.from('profiles').select('id,display_name').in('id',[...blockedIds]);
+ const names=new Map((ps||[]).map(p=>[p.id,p.display_name]));
+ blockedIds.forEach(id=>{const r=document.createElement('div');r.className='brow';
+  const n=document.createElement('span');n.textContent='@'+(names.get(id)||'usuario');
+  const b=document.createElement('button');b.textContent='Desbloquear';
+  b.onclick=async()=>{const {error}=await sb.from('blocks').delete().eq('blocker_id',me.id).eq('blocked_id',id);if(error)return toast(error.message);await renderBlocked();loadContacts(peer&&peer.id)};
+  r.append(n,b);box.append(r)})}
+async function openSettings(){
+ $('setUser').textContent='@'+myName();$('setPass').value='';$('setMsg').textContent='';refreshNotifBtn();$('setDlg').hidden=false;await renderBlocked()}
+$('bSet').onclick=openSettings;$('setClose').onclick=()=>$('setDlg').hidden=true;
+$('setCopy').onclick=async()=>{try{await navigator.clipboard.writeText(myName());toast('Usuario copiado')}catch(e){toast('No se pudo copiar')}};
+$('setAv').onclick=()=>{$('setDlg').hidden=true;openPick()};
+$('setPassGo').onclick=async()=>{
+ const np=$('setPass').value;
+ if(np.length<8)return $('setMsg').textContent='La contraseña necesita al menos 8 caracteres.';
+ const {error}=await sb.auth.updateUser({password:np});
+ $('setMsg').textContent=error?error.message:'Contraseña actualizada.';if(!error)$('setPass').value=''};
+$('setCode').onclick=()=>{if(confirm('El código anterior dejará de funcionar. ¿Crear uno nuevo?')){$('setDlg').hidden=true;newRecoveryCode()}};
+$('setDel').onclick=async()=>{
+ const u=prompt('Esto borra tu cuenta y tus mensajes para siempre. Escribe tu usuario para confirmar:');
+ if(u===null)return;
+ if(u.trim().toLowerCase()!==myName().toLowerCase())return toast('El usuario no coincide.');
+ const {error}=await sb.rpc('delete_my_account');
+ if(error)return toast('No se pudo borrar la cuenta: '+error.message);
+ try{await sb.auth.signOut()}catch(e){}
+ location.reload()};
+$('bMore').onclick=()=>{if(!peer)return;$('optName').textContent='@'+peer.display_name;$('optDlg').hidden=false};
+$('optClose').onclick=()=>$('optDlg').hidden=true;
+$('optBlock').onclick=async()=>{
+ if(!peer)return;
+ if(!confirm('¿Bloquear a @'+peer.display_name+'? No podrá escribirte ni llamarte.'))return;
+ const {error}=await sb.from('blocks').insert({blocker_id:me.id,blocked_id:peer.id});
+ if(error)return toast('No se pudo bloquear: '+error.message);
+ blockedIds.add(peer.id);$('optDlg').hidden=true;
+ if(chan){sb.removeChannel(chan);chan=null}
+ items.forEach(i=>clearTimeout(i.t));items.clear();conv=null;peer=null;
+ $('hName').textContent='Elige un contacto';$('hSub').textContent='';$('hAv').textContent='';$('bMore').hidden=true;
+ $('msgs').innerHTML='<p class="empty">Elige un contacto de la lista para empezar a chatear.</p>';
+ $('app').classList.remove('open');loadContacts();toast('Usuario bloqueado')};
+window.addEventListener('offline',()=>{$('off').hidden=false});
+window.addEventListener('online',()=>{$('off').hidden=true;if(me){if(conv)load();loadContacts(peer&&peer.id)}});
+if(!navigator.onLine)$('off').hidden=false;
+
 /* ---------- llamadas ---------- */
 const ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]};
 let pc=null,local=null,callPeer=null,callId=null,pend=[],incoming=null,ringT=null,cT=null,inbox=null,isVid=false;const outs={};
@@ -373,6 +491,7 @@ function listen(){if(inbox)sb.removeChannel(inbox);inbox=sb.channel('user:'+me.i
 function flush(){pend.splice(0).forEach(c=>pc&&pc.addIceCandidate(c).catch(()=>{}))}
 function onSig(m){
  if(m.type==='offer'){
+  if(blockedIds.has(m.from))return;
   if(pc||incoming)return sig(m.from,{type:'busy'});
   incoming=m;$('incName').textContent=m.name;$('incKind').textContent=m.video?'Videollamada entrante':'Llamada entrante';$('inc').hidden=false;
   clearTimeout(ringT);ringT=setTimeout(()=>{incoming=null;$('inc').hidden=true;pend=[]},40000)
