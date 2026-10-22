@@ -101,7 +101,7 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
    <label class="chk"><input type="checkbox" id="ageok"><span>Confirmo que esta fecha es correcta y que tengo 18 años o más. No se podrá cambiar después.</span></label></div>
   <p class="note" id="note" role="alert"></p>
   <button class="go" id="go">Crear cuenta</button>
-  <p class="ver" id="ver">Versión 5</p>
+  <p class="ver" id="ver">Versión 5.1</p>
  </div></div>
 </section>
 
@@ -172,7 +172,7 @@ function setMode(m){mode=m;
  $('go').textContent=m==='reg'?'Crear cuenta':'Entrar';note('')}
 $('tReg').onclick=()=>setMode('reg');$('tLog').onclick=()=>setMode('log');
 $('dob').max=new Date().toISOString().slice(0,10);
-if(ready)$('ver').textContent='Versión 5 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
+if(ready)$('ver').textContent='Versión 5.1 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
 async function diagnose(){
  const host=new URL(SUPABASE_URL).host;let r;
  try{const res=await fetch(SUPABASE_URL+'/auth/v1/health',{headers:{apikey:SUPABASE_KEY}});r='el servidor respondió '+res.status}
@@ -198,7 +198,8 @@ $('go').onclick=async()=>{
   if(mode==='reg'){
    const {data,error}=await sb.auth.signUp({email,password,options:{data:{username:u,display_name:u,birth_date:dob}}});
    if(error)throw error;
-   if(!data.session)note('La cuenta se creó, pero el servidor todavía pide confirmar un correo. Hay que desactivar "Confirm email" en Supabase (Authentication → Sign In / Providers → Email).');
+   if(!data.session){const r=await sb.auth.signInWithPassword({email,password});
+    if(r.error){if(/not confirmed/i.test(r.error.message))throw r.error;throw new Error('already registered')}}
   }else{
    const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error}
  }catch(e){
