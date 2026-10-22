@@ -88,6 +88,7 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
 .srow{display:flex;gap:8px;align-items:center;margin:8px 0}.srow input{flex:1}.srow button{padding:10px 14px;border-radius:12px;background:var(--panel2);color:var(--gold)}
 .brow{display:flex;justify-content:space-between;align-items:center;padding:8px 0}.brow button{color:var(--gold)}
 .dng{color:var(--bad)}
+#idle{position:fixed;top:0;left:0;right:0;background:var(--gold);color:#0a0f0c;text-align:center;padding:10px;z-index:31;font-weight:700;cursor:pointer}
 #off{position:fixed;top:0;left:0;right:0;background:var(--bad);color:#150505;text-align:center;padding:8px;z-index:30;font-weight:700}
 @media (max-width:760px){#auth{grid-template-columns:1fr}.hero{padding:32px 24px;min-height:34vh}
 #app{grid-template-columns:1fr}#app.open aside{display:none}#app:not(.open) main{display:none}.back{display:grid}.m{max-width:86%}}
@@ -121,7 +122,7 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
   <button class="go" id="go">Crear cuenta</button>
   <button class="lnk" id="forgot" type="button" hidden>Olvidé mi contraseña</button>
   <button class="lnk" id="backLog" type="button" hidden>Volver a entrar</button>
-  <p class="ver" id="ver">Versión 10</p>
+  <p class="ver" id="ver">Versión 11</p>
  </div></div>
 </section>
 
@@ -175,6 +176,7 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
 <div class="dlg" id="optDlg" hidden role="dialog" aria-labelledby="optName"><div class="box"><h3 id="optName"></h3>
  <button class="gbtn dng" id="optBlock">Bloquear usuario<small>No podrá escribirte ni llamarte, y no verá tu usuario en búsquedas.</small></button>
  <div class="row"><span></span><button id="optClose">Cerrar</button></div></div></div>
+<div id="idle" hidden role="alert">Tu sesión se cerrará en 1 minuto por inactividad. Toca aquí para continuar.</div>
 <div id="off" hidden role="status">Sin conexión. Reconectando…</div>
 <div id="toast" hidden></div>
 
@@ -202,6 +204,43 @@ function paint(el,key,name){const e=ANIMALS[key];el.textContent=e||ini(name);el.
 function toast(t){const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout(tt);tt=setTimeout(()=>e.hidden=true,4500)}
 function note(t,ok){$('note').textContent=t;$('note').className='note'+(ok?' ok':'')}
 
+/* ---------- cierre de sesión seguro e inactividad ---------- */
+const IDLE_MS=20*60*1000,WARN_MS=19*60*1000;
+let lastAct=Date.now(),lastStamp=0,bootCheck=true,leaving=false;
+const EMPTY_PICK='<p class="empty">Elige un contacto de la lista para empezar a chatear.</p>';
+function wipeUI(){
+ items.forEach(i=>clearTimeout(i.t));items.clear();peer=null;conv=null;
+ $('msgs').innerHTML=EMPTY_PICK;$('list').innerHTML='';
+ $('hName').textContent='Elige un contacto';$('hSub').textContent='';$('hAv').textContent='';$('bMore').hidden=true;
+ $('txt').value='';$('q').value='';$('user').value='';$('pass').value='';$('rcode').value='';$('setPass').value='';
+ ['setDlg','optDlg','pick','codeDlg','inc','call','idle'].forEach(id=>$(id).hidden=true);
+ $('app').classList.remove('open');document.title='Respiro'}
+async function secureLogout(reason){
+ if(leaving)return;leaving=true;
+ try{if(pc)endCall(true)}catch(e){}
+ try{await sb.removeAllChannels()}catch(e){}
+ try{await sb.auth.signOut({scope:'local'})}catch(e){}
+ wipeUI();
+ try{localStorage.clear();sessionStorage.clear()}catch(e){}
+ try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(e){}
+ try{if(indexedDB.databases){const dbs=await indexedDB.databases();dbs.forEach(d=>{if(d.name)indexedDB.deleteDatabase(d.name)})}}catch(e){}
+ if(reason){try{sessionStorage.setItem('rsp_msg',reason)}catch(e){}}
+ history.replaceState(null,'',location.pathname);
+ location.replace(location.pathname)}
+function activity(){
+ lastAct=Date.now();$('idle').hidden=true;
+ if(Date.now()-lastStamp>5000){lastStamp=Date.now();try{localStorage.setItem('rsp_last',String(lastAct))}catch(e){}}}
+['mousemove','mousedown','keydown','touchstart','scroll','click'].forEach(ev=>document.addEventListener(ev,activity,{passive:true,capture:true}));
+setInterval(()=>{
+ if(!me||leaving)return;
+ if(pc){lastAct=Date.now();return}
+ const idle=Date.now()-lastAct;
+ if(idle>=IDLE_MS)secureLogout('Cerramos tu sesión por 20 minutos de inactividad.');
+ else if(idle>=WARN_MS)$('idle').hidden=false},10000);
+document.addEventListener('visibilitychange',()=>{
+ if(me&&!leaving&&document.visibilityState==='visible'&&Date.now()-lastAct>=IDLE_MS)secureLogout('Cerramos tu sesión por 20 minutos de inactividad.')});
+window.addEventListener('pageshow',e=>{if(e.persisted)location.reload()});
+
 /* ---------- acceso: solo usuario y contraseña ---------- */
 function setMode(m){mode=m;
  $('tReg').setAttribute('aria-selected',m==='reg');$('tLog').setAttribute('aria-selected',m==='log'||m==='forgot');
@@ -212,7 +251,8 @@ function setMode(m){mode=m;
  $('go').textContent={reg:'Crear cuenta',log:'Entrar',forgot:'Cambiar contraseña'}[m];note('')}
 $('tReg').onclick=()=>setMode('reg');$('tLog').onclick=()=>setMode('log');
 $('forgot').onclick=()=>setMode('forgot');$('backLog').onclick=()=>setMode('log');
-if(ready)$('ver').textContent='Versión 10 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
+if(ready)$('ver').textContent='Versión 11 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
+try{const m0=sessionStorage.getItem('rsp_msg');if(m0){sessionStorage.removeItem('rsp_msg');note(m0,true)}}catch(e){}
 async function diagnose(){
  const host=new URL(SUPABASE_URL).host;let r;
  try{const res=await fetch(SUPABASE_URL+'/auth/v1/health',{headers:{apikey:SUPABASE_KEY}});r='el servidor respondió '+res.status}
@@ -282,9 +322,12 @@ $('codeDl').onclick=()=>{const a=document.createElement('a');a.href=URL.createOb
 $('pass').onkeydown=e=>{if(e.key==='Enter')$('go').click()};
 
 if(ready)sb.auth.onAuthStateChange((ev,s)=>{
- if(s&&s.user){if(!me||me.id!==s.user.id){me=s.user;enter()}}
- else if(me){if(pc)endCall(true);me=null;conv=null;if(chan)sb.removeChannel(chan);if(inbox){sb.removeChannel(inbox);inbox=null}if(gchan){sb.removeChannel(gchan);gchan=null}$('app').hidden=true;$('auth').hidden=false}});
-$('out').onclick=()=>sb.auth.signOut();
+ if(s&&s.user){
+  if(bootCheck){bootCheck=false;let l=0;try{l=+localStorage.getItem('rsp_last')||0}catch(e){}
+   if(l&&Date.now()-l>IDLE_MS){secureLogout('Cerramos tu sesión por inactividad.');return}}
+  if(!me||me.id!==s.user.id){me=s.user;lastAct=Date.now();enter()}}
+ else if(me){if(pc)endCall(true);me=null;conv=null;if(chan)sb.removeChannel(chan);if(inbox){sb.removeChannel(inbox);inbox=null}if(gchan){sb.removeChannel(gchan);gchan=null}wipeUI();$('app').hidden=true;$('auth').hidden=false}});
+$('out').onclick=()=>secureLogout();
 
 /* ---------- perfil, contactos ---------- */
 async function enter(){
@@ -463,8 +506,7 @@ $('setDel').onclick=async()=>{
  if(u.trim().toLowerCase()!==myName().toLowerCase())return toast('El usuario no coincide.');
  const {error}=await sb.rpc('delete_my_account');
  if(error)return toast('No se pudo borrar la cuenta: '+error.message);
- try{await sb.auth.signOut()}catch(e){}
- location.reload()};
+ await secureLogout('Tu cuenta fue eliminada.')};
 $('bMore').onclick=()=>{if(!peer)return;$('optName').textContent='@'+peer.display_name;$('optDlg').hidden=false};
 $('optClose').onclick=()=>$('optDlg').hidden=true;
 $('optBlock').onclick=async()=>{
