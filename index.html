@@ -126,7 +126,7 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
   <button class="go" id="go">Crear cuenta</button>
   <button class="lnk" id="forgot" type="button" hidden>Olvidé mi contraseña</button>
   <button class="lnk" id="backLog" type="button" hidden>Volver a entrar</button>
-  <p class="ver" id="ver">Versión 13</p>
+  <p class="ver" id="ver">Versión 14</p>
  </div></div>
 </section>
 
@@ -180,6 +180,7 @@ main{display:flex;flex-direction:column;min-height:0;min-width:0}
 <div class="dlg" id="optDlg" hidden role="dialog" aria-labelledby="optName"><div class="box"><h3 id="optName"></h3>
  <button class="gbtn dng" id="optBlock">Bloquear usuario<small>No podrá escribirte ni llamarte, y no verá tu usuario en búsquedas.</small></button>
  <button class="gbtn" id="optReport">Reportar usuario<small>Un administrador revisará tu reporte.</small></button>
+ <button class="gbtn dng" id="optDelChat">Eliminar chat<small>Borra toda la conversación para ambos. No se puede deshacer.</small></button>
  <div class="row"><span></span><button id="optClose">Cerrar</button></div></div></div>
 <div id="idle" hidden role="alert">Tu sesión se cerrará en 1 minuto por inactividad. Toca aquí para continuar.</div>
 <div class="dlg" id="repDlg" hidden role="dialog" aria-labelledby="repT"><div class="box"><h3 id="repT">Reportar usuario</h3>
@@ -273,7 +274,7 @@ function setMode(m){mode=m;
  $('go').textContent={reg:'Crear cuenta',log:'Entrar',forgot:'Cambiar contraseña'}[m];note('')}
 $('tReg').onclick=()=>setMode('reg');$('tLog').onclick=()=>setMode('log');
 $('forgot').onclick=()=>setMode('forgot');$('backLog').onclick=()=>setMode('log');
-if(ready)$('ver').textContent='Versión 13 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
+if(ready)$('ver').textContent='Versión 14 · servidor '+new URL(SUPABASE_URL).host.split('.')[0].slice(0,8);
 try{const m0=sessionStorage.getItem('rsp_msg');if(m0){sessionStorage.removeItem('rsp_msg');note(m0,true)}}catch(e){}
 async function diagnose(){
  const host=new URL(SUPABASE_URL).host;let r;
@@ -415,6 +416,9 @@ async function openChat(p,btn){
   conv=await findOrCreate(p);await load();loadContacts(p.id)
  }catch(e){toast('No se pudo abrir el chat: '+e.message)}}
 $('back').onclick=()=>$('app').classList.remove('open');
+function closeChatUI(){conv=null;peer=null;items.forEach(i=>clearTimeout(i.t));items.clear();
+ $('hName').textContent='Elige un contacto';$('hSub').textContent='';$('hAv').textContent='';$('bMore').hidden=true;
+ $('msgs').innerHTML=EMPTY_PICK;$('app').classList.remove('open')}
 
 const EMPTY='<p class="empty">Aún no hay mensajes. Escribe el primero.</p>';
 async function load(){
@@ -427,6 +431,8 @@ async function load(){
  if(chan)sb.removeChannel(chan);
  const f='conversation_id=eq.'+conv;
  chan=sb.channel('m-'+conv)
+  .on('postgres_changes',{event:'DELETE',schema:'public',table:'conversations',filter:'id=eq.'+conv},()=>{
+   if(chan){sb.removeChannel(chan);chan=null}closeChatUI();loadContacts();toast('El otro usuario eliminó este chat')})
   .on('broadcast',{event:'typing'},x=>showTyping(x.payload))
   .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:f},x=>add(x.new).then(markRead))
   .on('postgres_changes',{event:'UPDATE',schema:'public',table:'messages',filter:f},x=>setExpiry(x.new))
@@ -533,6 +539,12 @@ $('setDel').onclick=async()=>{
 $('bMore').onclick=()=>{if(!peer)return;$('optName').textContent='@'+peer.display_name;$('optDlg').hidden=false};
 $('optClose').onclick=()=>$('optDlg').hidden=true;
 $('optReport').onclick=()=>{if(!peer)return;$('optDlg').hidden=true;$('repText').value='';$('repMsg').textContent='';$('repDlg').hidden=false};
+$('optDelChat').onclick=async()=>{
+ if(!peer||!conv)return;
+ if(!confirm('¿Eliminar el chat con @'+peer.display_name+'? Se borra para los dos y no se puede deshacer.'))return;
+ const {error}=await sb.rpc('delete_conversation',{conv});
+ if(error)return toast('No se pudo eliminar: '+error.message);
+ $('optDlg').hidden=true;closeChatUI();loadContacts();toast('Chat eliminado')};
 $('repCancel').onclick=()=>$('repDlg').hidden=true;
 $('repSend').onclick=async()=>{
  const reason=$('repText').value.trim();
@@ -587,7 +599,47 @@ async function suspend(uid,uname){
  if(reason===null)return;
  const {error}=await sb.rpc('admin_suspend_user',{target:uid,reason});
  if(error)return toast(error.message);
- toast('@'+uname+' fue suspendido');await loadReports();if($('adUser').value)adSearch()}
+ toast('@'+uname+' fue suspendido');await loadReports()}
+function adTab(t){$('adTabUsers').setAttribute('aria-selected',t==='u');$('adTabReports').setAttribute('aria-selected',t==='r');
+ $('adPaneUsers').hidden=t!=='u';$('adPaneReports').hidden=t!=='r'}
+$('adTabUsers').onclick=()=>adTab('u');$('adTabReports').onclick=()=>adTab('r');
+let adCursor=null;
+function userRow(p){
+ const d=document.createElement('div');d.className='rrow';
+ d.innerHTML='<p><b>@'+p.username+'</b> '+(p.is_admin?'<span class="tag reviewed" style="display:inline-block">admin</span>':'')+(p.suspended?' <span class="tag open" style="display:inline-block">Suspendido</span>':'')+'</p>'+
+  '<p class="meta">Creado: '+new Date(p.created_at).toLocaleDateString('es')+'</p><div class="actions"></div>';
+ const act=d.querySelector('.actions');
+ if(!p.is_admin){
+  const sb1=document.createElement('button');sb1.textContent=p.suspended?'Levantar suspensión':'Suspender';
+  sb1.onclick=async()=>{
+   if(p.suspended){const {error}=await sb.rpc('admin_unsuspend_user',{target:p.id});if(error)return toast(error.message);toast('Suspensión levantada')}
+   else{const r=prompt('¿Por qué suspendes a @'+p.username+'?')||'';if(r===null)return;const {error}=await sb.rpc('admin_suspend_user',{target:p.id,reason:r});if(error)return toast(error.message);toast('@'+p.username+' fue suspendido')}
+   adUsers(true)};
+  const rp=document.createElement('button');rp.textContent='Restablecer contraseña';
+  rp.onclick=async()=>{
+   const np=prompt('Nueva contraseña para @'+p.username+' (mínimo 8 caracteres):')||'';
+   if(!np)return;if(np.length<8)return toast('La contraseña necesita al menos 8 caracteres.');
+   const {error}=await sb.rpc('admin_reset_password',{target:p.id,new_password:np});
+   if(error)return toast(error.message);
+   toast('Contraseña de @'+p.username+' actualizada')};
+  const db=document.createElement('button');db.textContent='Eliminar';db.className='dng';
+  db.onclick=async()=>{
+   if(!confirm('Esto borra la cuenta @'+p.username+' y sus mensajes para siempre. ¿Continuar?'))return;
+   const {error}=await sb.rpc('admin_delete_user',{target:p.id});
+   if(error)return toast(error.message);
+   toast('@'+p.username+' fue eliminado');adUsers(true)};
+  act.append(sb1,rp,db)}
+ return d}
+async function adUsers(reset){
+ if(reset){adCursor=null;$('adUserList').innerHTML=''}
+ const q=$('adUser').value.trim();
+ const {data,error}=await sb.rpc('admin_list_users',{q:q||null,cursor_ts:adCursor,page_size:30});
+ if(error)return $('adUserList').innerHTML='<p class="hint" style="padding:0">'+error.message+'</p>';
+ if(reset&&(!data||!data.length)){$('adUserList').innerHTML='<p class="hint" style="padding:0">No se encontraron usuarios.</p>';$('adMore').hidden=true;return}
+ (data||[]).forEach(p=>$('adUserList').append(userRow(p)));
+ if(data&&data.length){adCursor=data[data.length-1].created_at;$('adMore').hidden=data.length<30}else $('adMore').hidden=true}
+$('adSearchGo').onclick=()=>adUsers(true);$('adUser').onkeydown=e=>{if(e.key==='Enter')adUsers(true)};
+$('adMore').onclick=()=>adUsers(false);
 $('bAdmin').onclick=()=>{openAdmin();adTab('u');adUsers(true)};$('adClose').onclick=()=>$('adminDlg').hidden=true;
 
 /* ---------- llamadas ---------- */
